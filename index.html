@@ -40,6 +40,16 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .tool-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--bd);background:var(--w);margin:2px}
 .tool-pill.done{background:var(--gl);border-color:rgba(0,63,63,.18)}
 .tool-chk{width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.tab-btn{padding:11px 18px;border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--dg);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--g)}
+.active-tab{color:var(--g);border-bottom-color:var(--g)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{padding:8px 10px;text-align:right;font-size:10px;font-weight:700;color:var(--dg);background:#faf9f7;border-bottom:2px solid var(--bd);cursor:pointer;white-space:nowrap;user-select:none}
+.tbl th:hover{color:var(--g)}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.tbl tr:hover td{background:#faf9f7}
+.tbl tr:last-child td{border-bottom:none}
+.kpi-card{background:var(--w);border-radius:12px;padding:16px 20px;border:1px solid var(--bd);box-shadow:0 1px 6px rgba(0,0,0,.04)}
 @media(max-width:680px){.projects-grid{padding:12px;grid-template-columns:1fr}.dash-stats{gap:14px}.dash-stat .v{font-size:14px}}
 </style>
 </head>
@@ -76,12 +86,32 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
       <button onclick="doLogout()">خروج</button>
     </div>
   </div>
-  <div style="padding:12px 24px 0;display:flex;gap:8px">
-    <button onclick="expandAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تكبير الجميع ↓</button>
-    <button onclick="collapseAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تصغير الجميع ↑</button>
+  <!-- Tab nav -->
+  <div style="background:var(--w);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;gap:0">
+    <button id="tab-cards" onclick="switchView('cards')" class="tab-btn active-tab">⊞ بطاقات</button>
+    <button id="tab-table" onclick="switchView('table')" class="tab-btn">☰ قائمة</button>
+    <button id="tab-analytics" onclick="switchView('analytics')" class="tab-btn">◎ تحليلات</button>
   </div>
-  <div class="projects-grid" id="projectsGrid"></div>
-  <div style="text-align:center;padding:6px 24px 20px;font-size:9px;color:#c4bfb8">اضغط المادة لتفعيلها · كلك يمين للرابط · اضغط الأقسام للطي</div>
+
+  <!-- Cards view -->
+  <div id="view-cards">
+    <div style="padding:12px 24px 0;display:flex;gap:8px">
+      <button onclick="expandAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تكبير الجميع ↓</button>
+      <button onclick="collapseAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تصغير الجميع ↑</button>
+    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
+    <div style="text-align:center;padding:6px 24px 20px;font-size:9px;color:#c4bfb8">اضغط المادة لتفعيلها · كلك يمين للرابط · اضغط الأقسام للطي</div>
+  </div>
+
+  <!-- Table view -->
+  <div id="view-table" style="display:none;padding:16px 20px">
+    <div id="tableContainer"></div>
+  </div>
+
+  <!-- Analytics view -->
+  <div id="view-analytics" style="display:none;padding:16px 20px">
+    <div id="analyticsContainer"></div>
+  </div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
@@ -96,6 +126,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
@@ -151,7 +182,7 @@ const DEFAULTS = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let DATA = {}, OPEN = {};
+let DATA = {}, OPEN = {}, VIEW = 'cards', TABLE_SORT = {col:'soldPct',dir:'desc'}, TABLE_FILTER = '', _charts = {};
 
 // ── Login ──
 function doLogin(){
@@ -362,6 +393,118 @@ function cardHTML(pid){
 
 function expandAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=true});render()}
 function collapseAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=false});render()}
+
+// ── Views ──
+function switchView(v){
+  VIEW=v;
+  ['cards','table','analytics'].forEach(x=>{
+    document.getElementById('view-'+x).style.display=x===v?'block':'none';
+    const tb=document.getElementById('tab-'+x);
+    tb.classList.toggle('active-tab',x===v);
+  });
+  if(v==='table')renderTable();
+  else if(v==='analytics')renderAnalytics();
+}
+
+function tblRows(){
+  return PROJECTS.map(p=>{
+    const d=DATA[p.id];if(!d)return null;
+    const soldPct=Math.round(((d.sold+d.booked)/d.units)*100);
+    const cpl=d.leads>0?Math.round(d.spent/d.leads):0;
+    const matPct=Math.round(d.tools.filter(t=>t.d).length/d.tools.length*100);
+    return{pid:p.id,name:p.name,loc:p.loc,units:d.units,sold:d.sold,booked:d.booked,remain:d.units-d.sold-d.booked,soldPct,leads:d.leads,cpl,budget:d.budget,spent:d.spent,matPct,weeks:weeksElapsed(d.promoStart)};
+  }).filter(Boolean);
+}
+
+function sortTable(col){
+  TABLE_SORT=TABLE_SORT.col===col?{col,dir:TABLE_SORT.dir==='asc'?'desc':'asc'}:{col,dir:'desc'};
+  renderTable();
+}
+
+function renderTable(){
+  let rows=tblRows();
+  if(TABLE_FILTER){const f=TABLE_FILTER;rows=rows.filter(r=>r.name.includes(f)||r.loc.includes(f))}
+  const{col,dir}=TABLE_SORT;
+  rows.sort((a,b)=>a[col]>b[col]?(dir==='asc'?1:-1):a[col]<b[col]?(dir==='asc'?-1:1):0);
+  const arrow=c=>TABLE_SORT.col===c?(TABLE_SORT.dir==='asc'?' ▲':' ▼'):'';
+  const cols=[
+    {k:'name',l:'المشروع',w:'130px'},{k:'soldPct',l:'%البيع'+arrow('soldPct'),w:'70px'},{k:'sold',l:'مباع'+arrow('sold'),w:'55px'},
+    {k:'booked',l:'محجوز'+arrow('booked'),w:'55px'},{k:'remain',l:'متبقي'+arrow('remain'),w:'55px'},{k:'units',l:'وحدات'+arrow('units'),w:'55px'},
+    {k:'leads',l:'تسجيل'+arrow('leads'),w:'70px'},{k:'cpl',l:'CPL'+arrow('cpl'),w:'65px'},
+    {k:'budget',l:'الميزانية'+arrow('budget'),w:'90px'},{k:'spent',l:'المصروف'+arrow('spent'),w:'90px'},
+    {k:'matPct',l:'المواد'+arrow('matPct'),w:'65px'},{k:'weeks',l:'أسابيع'+arrow('weeks'),w:'65px'},
+  ];
+  document.getElementById('tableContainer').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <input type="text" placeholder="ابحث عن مشروع..." value="${TABLE_FILTER}" oninput="TABLE_FILTER=this.value;renderTable()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--bd);font-family:inherit;font-size:12px;width:220px;outline:none">
+      <span style="font-size:11px;color:var(--dg)">${rows.length} مشروع</span>
+    </div>
+    <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--bd);background:var(--w)">
+    <table class="tbl">
+      <thead><tr>${cols.map(c=>`<th style="width:${c.w}" onclick="sortTable('${c.k}')">${c.l}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>{
+        const sc=saleCol(r.soldPct);
+        return`<tr>
+          <td><div style="font-weight:700;color:var(--g);font-size:12px">${r.name}</div><div style="font-size:10px;color:var(--b)">${r.loc}</div></td>
+          <td><span style="font-weight:800;color:${sc}">${r.soldPct}%</span></td>
+          <td style="color:#1b7a4a;font-weight:700">${r.sold}</td>
+          <td style="color:#d4850a;font-weight:700">${r.booked}</td>
+          <td style="color:#c0392b;font-weight:700">${r.remain}</td>
+          <td style="color:var(--dg)">${r.units}</td>
+          <td style="color:var(--nv);font-weight:600">${r.leads.toLocaleString()}</td>
+          <td><span style="background:var(--bl);padding:2px 7px;border-radius:5px;font-weight:700;color:var(--b)">${r.cpl} ر.س</span></td>
+          <td style="color:var(--dg)">${r.budget.toLocaleString()}</td>
+          <td style="color:var(--dg)">${r.spent.toLocaleString()}</td>
+          <td><div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:5px;border-radius:3px;background:#ece8e3;overflow:hidden"><div style="height:100%;width:${r.matPct}%;background:var(--g)"></div></div><span style="font-size:9px;color:var(--dg)">${r.matPct}%</span></div></td>
+          <td style="color:var(--dg)">${r.weeks} أسبوع</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+}
+
+function renderAnalytics(){
+  Object.values(_charts).forEach(c=>c.destroy());_charts={};
+  const names=PROJECTS.map(p=>DATA[p.id]?p.name:'').filter(Boolean);
+  const sold=PROJECTS.map(p=>DATA[p.id]?.sold||0);
+  const booked=PROJECTS.map(p=>DATA[p.id]?.booked||0);
+  const remain=PROJECTS.map(p=>{const d=DATA[p.id];return d?d.units-d.sold-d.booked:0});
+  const cpls=PROJECTS.map(p=>{const d=DATA[p.id];return d&&d.leads>0?Math.round(d.spent/d.leads):0});
+  const matPcts=PROJECTS.map(p=>{const d=DATA[p.id];return d?Math.round(d.tools.filter(t=>t.d).length/d.tools.length*100):0});
+  const budgets=PROJECTS.map(p=>DATA[p.id]?.budget||0);
+  const spents=PROJECTS.map(p=>DATA[p.id]?.spent||0);
+  const tSold=sold.reduce((a,b)=>a+b,0),tBooked=booked.reduce((a,b)=>a+b,0);
+  const tRemain=remain.reduce((a,b)=>a+b,0),tLeads=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.leads||0),0);
+  const tUnits=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.units||0),0);
+  const tSpent=spents.reduce((a,b)=>a+b,0),avgCPL=tLeads>0?Math.round(tSpent/tLeads):0;
+
+  document.getElementById('analyticsContainer').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px">
+      ${[
+        {v:tLeads.toLocaleString(),l:'إجمالي التسجيلات',c:'var(--nv)',bg:'#eef1f8'},
+        {v:Math.round((tSold+tBooked)/tUnits*100)+'%',l:'نسبة البيع الكلية',c:'#1b7a4a',bg:'#edf7f0'},
+        {v:avgCPL+' ر.س',l:'متوسط تكلفة الليد',c:'var(--b)',bg:'var(--bl)'},
+        {v:tSpent.toLocaleString(),l:'إجمالي الإنفاق',c:'var(--g)',bg:'var(--gl)'},
+      ].map(k=>`<div class="kpi-card" style="background:${k.bg}"><div style="font-size:22px;font-weight:800;color:${k.c}">${k.v}</div><div style="font-size:10px;color:var(--dg);margin-top:4px">${k.l}</div></div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">مقارنة البيع لكل مشروع</div><canvas id="chSales" height="260"></canvas></div>
+      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">توزيع الوحدات الكلي</div><canvas id="chDonut" height="260"></canvas></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">تكلفة الليد CPL لكل مشروع</div><canvas id="chCPL" height="220"></canvas></div>
+      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">جاهزية المواد الاتصالية</div><canvas id="chMat" height="220"></canvas></div>
+    </div>
+    <div class="kpi-card" style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">الميزانية والإنفاق لكل مشروع</div><canvas id="chBudget" height="140"></canvas></div>`;
+
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:true,textDirection:'rtl',bodyFont:{family:'IBM Plex Sans Arabic'},titleFont:{family:'IBM Plex Sans Arabic'}}},scales:{x:{ticks:{font:{family:'IBM Plex Sans Arabic',size:10}}},y:{ticks:{font:{family:'IBM Plex Sans Arabic',size:10}}}}};
+  const hOpts={...opts,indexAxis:'y',scales:{x:{...opts.scales?.x,ticks:{font:{family:'IBM Plex Sans Arabic',size:9}}},y:{...opts.scales?.y,ticks:{font:{family:'IBM Plex Sans Arabic',size:9}}}}};
+
+  _charts.sales=new Chart(document.getElementById('chSales'),{type:'bar',data:{labels:names,datasets:[{label:'مباع',data:sold,backgroundColor:'#1b7a4a',borderRadius:3,stack:'s'},{label:'محجوز',data:booked,backgroundColor:'#d4850a',borderRadius:3,stack:'s'},{label:'متبقي',data:remain,backgroundColor:'#ece8e3',borderRadius:3,stack:'s'}]},options:{...hOpts,plugins:{...hOpts.plugins,legend:{display:true,position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:10},boxWidth:10}}}}});
+  _charts.donut=new Chart(document.getElementById('chDonut'),{type:'doughnut',data:{labels:['مباع','محجوز','متبقي'],datasets:[{data:[tSold,tBooked,tRemain],backgroundColor:['#1b7a4a','#d4850a','#ece8e3'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:11},boxWidth:12}},tooltip:{rtl:true,bodyFont:{family:'IBM Plex Sans Arabic'}}}}});
+  _charts.cpl=new Chart(document.getElementById('chCPL'),{type:'bar',data:{labels:names,datasets:[{data:cpls,backgroundColor:'#a88575',borderRadius:4}]},options:{...hOpts,plugins:{...hOpts.plugins,annotation:{annotations:{line:{type:'line',xMin:40,xMax:40,borderColor:'#c0392b',borderWidth:1.5,borderDash:[4,3]}}}}}});
+  _charts.mat=new Chart(document.getElementById('chMat'),{type:'bar',data:{labels:names,datasets:[{data:matPcts,backgroundColor:matPcts.map(v=>v===100?'#1b7a4a':v>=60?'#003f3f':'#d4850a'),borderRadius:4}]},options:{...hOpts,scales:{...hOpts.scales,x:{...hOpts.scales.x,max:100,ticks:{callback:v=>v+'%'}}}}});
+  _charts.budget=new Chart(document.getElementById('chBudget'),{type:'bar',data:{labels:names,datasets:[{label:'الميزانية',data:budgets,backgroundColor:'rgba(0,63,63,.15)',borderRadius:4},{label:'المصروف',data:spents,backgroundColor:'#a88575',borderRadius:4}]},options:{...opts,plugins:{...opts.plugins,legend:{display:true,position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:10},boxWidth:10}}}}});
+}
 
 // ── Render ──
 function renderHeader(){
