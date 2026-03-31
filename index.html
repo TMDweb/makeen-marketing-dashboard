@@ -228,6 +228,10 @@ function openModal(type,pid,mk){
   }else if(type==='edit'){
     document.getElementById('modalSub').textContent='تعديل الأرقام';
     document.getElementById('modalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><label class="edit-label">تسجيلات</label><input class="edit-input" id="e1" type="number" value="${d.leads}"></div><div><label class="edit-label">محجوز / مباع</label><input class="edit-input" id="e2" type="number" value="${d.booked}"></div><div><label class="edit-label">إجمالي الوحدات</label><input class="edit-input" id="e3" type="number" value="${d.totalUnits}"></div></div>`;
+  }else if(type==='campaign'){
+    document.getElementById('modalSub').textContent='مدة الحملة الترويجية';
+    document.getElementById('modalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label class="edit-label">تاريخ بداية الترويج</label><input class="edit-input" id="cs" type="date" value="${d.campaignStart||''}"></div><div><label class="edit-label">تاريخ الانتهاء (اختياري)</label><input class="edit-input" id="ce" type="date" value="${d.campaignEnd||''}"></div></div><div style="margin-top:8px;font-size:10px;color:var(--dg)">اتركه فارغاً إذا لازالت الحملة مستمرة</div>${d.campaignStart?`<button onclick="clearCampaign('${pid}')" style="margin-top:10px;background:none;border:1px solid #ddd;border-radius:6px;padding:4px 12px;font-size:11px;color:#aaa;cursor:pointer;font-family:inherit">مسح التواريخ</button>`:''}`;
+    setTimeout(()=>document.getElementById('cs')?.focus(),50);
   }
   document.getElementById('modalOverlay').style.display='flex';
 }
@@ -240,7 +244,49 @@ function closeModal(){
     const l=+(document.getElementById('e1')?.value||0),b=+(document.getElementById('e2')?.value||0),u=+(document.getElementById('e3')?.value||0);
     DATA[pid].leads=l;DATA[pid].booked=b;DATA[pid].totalUnits=u;
     db.ref('projects/'+pid+'/leads').set(l);db.ref('projects/'+pid+'/booked').set(b);db.ref('projects/'+pid+'/totalUnits').set(u);
+  }else if(type==='campaign'){
+    const s=document.getElementById('cs')?.value||'',e=document.getElementById('ce')?.value||'';
+    DATA[pid].campaignStart=s;DATA[pid].campaignEnd=e;
+    db.ref('projects/'+pid+'/campaignStart').set(s);db.ref('projects/'+pid+'/campaignEnd').set(e);
   }
+  _modal=null;document.getElementById('modalOverlay').style.display='none';render();
+}
+
+// ── Campaign ──
+function parseDate(s){
+  if(!s)return null;
+  if(s.includes('-')){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+  return null;
+}
+function fmtDate(s){
+  const d=parseDate(s);if(!d)return s;
+  return d.toLocaleDateString('ar-SA',{day:'2-digit',month:'2-digit'});
+}
+function campaignHTML(d,pid){
+  const start=d.campaignStart,end=d.campaignEnd;
+  if(!start){
+    return `<div onclick="openModal('campaign','${pid}')" style="padding:0 18px 12px"><div style="padding:6px 10px;border-radius:7px;border:1px dashed var(--bd);font-size:10px;color:#ccc;cursor:pointer;text-align:center">+ تحديد مدة الحملة الترويجية</div></div>`;
+  }
+  const today=new Date();today.setHours(0,0,0,0);
+  const sd=parseDate(start);
+  let elapsed='';
+  if(sd&&sd<=today){
+    const w=Math.floor((today-sd)/(7*864e5));
+    const days=Math.floor((today-sd)/864e5);
+    elapsed=w===0?(days===0?'اليوم الأول':`يوم ${days+1}`):w===1?'أسبوع واحد':`${w} أسابيع`;
+  }else if(sd&&sd>today){elapsed='لم تبدأ بعد'}
+  let statusTxt,statusCol;
+  if(end){
+    const ed=parseDate(end);
+    if(ed&&ed<today){statusTxt=`انتهت ${fmtDate(end)}`;statusCol='#aaa'}
+    else{statusTxt=`تنتهي ${fmtDate(end)}`;statusCol='var(--amber)'}
+  }else{statusTxt='لازالت مستمرة';statusCol='#1b7a4a'}
+  return `<div onclick="openModal('campaign','${pid}')" style="padding:0 18px 12px;cursor:pointer"><div style="padding:8px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px"><div><div style="font-size:9px;color:var(--dg)">بداية الترويج · ${fmtDate(start)}</div><div style="font-size:12px;font-weight:700;color:var(--g);margin-top:2px">${elapsed}</div></div><div style="text-align:left"><div style="font-size:10px;font-weight:600;color:${statusCol};white-space:nowrap">${statusTxt}</div></div></div></div>`;
+}
+
+function clearCampaign(pid){
+  DATA[pid].campaignStart='';DATA[pid].campaignEnd='';
+  db.ref('projects/'+pid+'/campaignStart').set('');db.ref('projects/'+pid+'/campaignEnd').set('');
   _modal=null;document.getElementById('modalOverlay').style.display='none';render();
 }
 
@@ -297,6 +343,7 @@ function render(){
         ${[{v:d.leads,l:'تسجيل',c:'var(--nv)'},{v:d.booked,l:'حجز',c:'#1b7a4a'},{v:sP+'%',l:'مباع',c:sP>=70?'#1b7a4a':'var(--b)'},{v:rem,l:'متبقي',c:'var(--mr)'}]
           .map(m=>`<div style="text-align:center;padding:7px 2px;border-radius:8px;background:var(--bg)"><div style="font-size:14px;font-weight:700;color:${m.c}">${m.v}</div><div style="font-size:8px;color:var(--dg);margin-top:1px">${m.l}</div></div>`).join('')}
       </div>
+      ${campaignHTML(d,p.id)}
       <div style="padding:0 18px 12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:10px;font-weight:600;color:var(--dg)">المواد الاتصالية</span>
