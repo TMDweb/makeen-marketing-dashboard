@@ -81,8 +81,8 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
   <div class="login-box">
     <h1>◆ أساس مكين</h1>
     <p>لوحة متابعة المشاريع</p>
-    <input type="text" id="loginName" placeholder="اسمك" autocomplete="off">
-    <input type="password" id="loginCode" placeholder="رمز الدخول">
+    <input type="text" id="loginName" placeholder="اسم المستخدم" autocomplete="off">
+    <input type="password" id="loginCode" placeholder="كلمة المرور">
     <button onclick="doLogin()">دخول</button>
     <div id="loginErr" class="login-err"></div>
   </div>
@@ -115,7 +115,6 @@ const firebaseConfig = {
   measurementId: "G-RH6LEWBYRS"
 };
 
-const ACCESS_CODE = "makeen2026";
 
 const DEFAULTS = [
   {id:"m64",name:"مكين 64",loc:"حي العارض",units:48,sold:31,booked:7,leads:214,budget:85000,spent:62000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/43"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"أداء ممتاز، نسبة التحويل عالية. التركيز على الوحدات المتبقية بعروض محدودة."},
@@ -135,12 +134,20 @@ const db = firebase.database();
 let DATA = [], openId = null;
 
 function doLogin(){
-  const name=document.getElementById('loginName').value.trim();
-  const code=document.getElementById('loginCode').value.trim();
+  const username=document.getElementById('loginName').value.trim();
+  const pass=document.getElementById('loginCode').value.trim();
   const err=document.getElementById('loginErr');
-  if(!name){err.textContent='اكتب اسمك';err.style.display='block';return}
-  if(code!==ACCESS_CODE){err.textContent='رمز الدخول غير صحيح';err.style.display='block';return}
-  localStorage.setItem('makeen_user',name);showDash(name);
+  const btn=document.querySelector('.login-box button');
+  if(!username){err.textContent='اكتب اسم المستخدم';err.style.display='block';return}
+  if(!pass){err.textContent='اكتب كلمة المرور';err.style.display='block';return}
+  btn.textContent='جاري التحقق...';btn.disabled=true;
+  db.ref('users/'+username.charAt(0).toUpperCase()+username.slice(1)).once('value',snap=>{
+    btn.textContent='دخول';btn.disabled=false;
+    if(!snap.exists()||snap.val()!==pass){
+      err.textContent='اسم المستخدم أو كلمة المرور غير صحيحة';err.style.display='block';return;
+    }
+    localStorage.setItem('makeen_user',username);showDash(username);
+  });
 }
 function doLogout(){localStorage.removeItem('makeen_user');document.getElementById('dashboard').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginName').value='';document.getElementById('loginCode').value=''}
 function showDash(name){document.getElementById('loginScreen').style.display='none';document.getElementById('dashboard').style.display='block';document.getElementById('userName').textContent='مرحبًا '+name;document.getElementById('dateDisplay').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});loadData()}
