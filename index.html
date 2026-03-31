@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أساس مكين | لوحة متابعة المشاريع</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#003f3f;--b:#a88575;--bk:#222;--nv:#132556;--mr:#59132e;--dg:#352f2e;--w:#fff;--bg:#f5f3f0;--gl:#e8f0ef;--bl:#f5ede9;--bd:#e0dbd5;--green:#1b7a4a;--red:#c0392b;--amber:#d4850a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--bk);min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--g)}
+.login-box{background:var(--w);border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-box h1{color:var(--g);font-size:22px;font-weight:800;margin-bottom:4px}
+.login-box p{color:var(--b);font-size:13px;margin-bottom:28px}
+.login-box input{width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid var(--bd);font-family:inherit;font-size:14px;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:var(--g)}
+.login-box button{width:100%;padding:12px;border-radius:10px;background:var(--g);color:var(--w);font-family:inherit;font-size:14px;font-weight:700;border:none;cursor:pointer}
+.login-box button:hover{background:#004d4d}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.header{background:var(--g);padding:18px 24px}
+.header-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+.header h1{color:var(--w);font-size:19px;font-weight:800}
+.header .sub{color:var(--b);font-size:12px;margin-top:2px}
+.user-info{color:rgba(255,255,255,.5);font-size:11px;display:flex;align-items:center;gap:10px}
+.user-info button{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);padding:3px 10px;border-radius:6px;font-size:10px;cursor:pointer;font-family:inherit}
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px}
+.stat-card{background:rgba(255,255,255,.08);border-radius:10px;padding:12px 8px;text-align:center}
+.stat-card .num{font-size:22px;font-weight:800}
+.stat-card .lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.budget-bar{background:var(--w);padding:12px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:14px}
+.bar-wrap{flex:1;height:10px;border-radius:5px;background:#ece8e3;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;background:var(--b);transition:width .5s}
+.projects{padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.card{background:var(--w);border-radius:12px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.04);border:1px solid var(--bd);transition:border .2s}
+.card.open{border:2px solid var(--g)}
+.card-row{padding:14px 18px;cursor:pointer;display:grid;grid-template-columns:150px 50px 1fr 110px 70px 20px;align-items:center;gap:12px}
+.card-row:hover{background:#faf9f7}
+.ring{position:relative;flex-shrink:0}
+.ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.sbar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#ece8e3}
+.sbar>div{transition:width .5s}
+.sbar-labels{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--dg)}
+.badge{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;text-align:center;white-space:nowrap}
+.dots{display:flex;gap:3px;justify-content:center}
+.dot{width:8px;height:8px;border-radius:50%}
+.arrow{font-size:16px;color:var(--dg);transition:transform .2s;text-align:center}
+.card.open .arrow{transform:rotate(90deg)}
+.expanded{border-top:1px solid var(--bd);background:#faf9f7;display:grid;grid-template-columns:1fr 1fr}
+.exp-col{padding:18px 20px}
+.exp-col:first-child{border-left:1px solid var(--bd)}
+.exp-title{font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.accent{width:3px;height:14px;border-radius:2px;background:var(--b)}
+.big-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.bn-card{text-align:center;padding:10px 6px;border-radius:8px;background:var(--w);border:1px solid var(--bd)}
+.bn-card .val{font-size:22px;font-weight:800}
+.bn-card .lbl{font-size:9px;color:var(--dg);margin-top:2px}
+.detail-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;background:#ece8e3;margin-bottom:6px}
+.detail-bar>div{display:flex;align-items:center;justify-content:center;color:var(--w);font-size:10px;font-weight:700}
+.legend{display:flex;gap:14px;font-size:10px;margin-bottom:14px}
+.legend span{display:flex;align-items:center;gap:4px}
+.sq{width:8px;height:8px;border-radius:2px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{padding:8px;border-radius:8px;text-align:center}
+.kpi .val{font-size:14px;font-weight:800}
+.kpi .lbl{font-size:9px;color:var(--dg)}
+.tool-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;margin-bottom:5px;border:1px solid var(--bd)}
+.tool-row.done{background:var(--gl);border-color:rgba(0,63,63,.2)}
+.tool-check{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.note-box{padding:10px 14px;border-radius:8px;background:var(--w);border:1px solid var(--bd);font-size:12px;line-height:1.7;color:var(--dg);width:100%;font-family:inherit;resize:vertical;min-height:40px}
+.edit-input{width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--bd);font-size:12px;font-family:inherit;box-sizing:border-box}
+.edit-label{font-size:10px;color:var(--dg);display:block;margin-bottom:3px}
+.link-input{width:100px;padding:4px 6px;border-radius:4px;border:1px solid var(--bd);font-size:10px;font-family:inherit}
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(3,1fr)}.card-row{grid-template-columns:130px 44px 1fr 20px}.card-row .badge,.card-row .dots{display:none}.expanded{grid-template-columns:1fr}.exp-col:first-child{border-left:none;border-bottom:1px solid var(--bd)}}
+@media(max-width:600px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <div class="login-box">
+    <h1>◆ أساس مكين</h1>
+    <p>لوحة متابعة المشاريع</p>
+    <input type="text" id="loginName" placeholder="اسمك" autocomplete="off">
+    <input type="password" id="loginCode" placeholder="رمز الدخول">
+    <button onclick="doLogin()">دخول</button>
+    <div id="loginErr" class="login-err"></div>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none">
+  <div class="header">
+    <div class="header-top">
+      <div><h1>◆ أساس مكين</h1><div class="sub">لوحة متابعة المشاريع المتاحة للبيع</div></div>
+      <div class="user-info"><span id="userName"></span><span id="dateDisplay"></span><button onclick="doLogout()">خروج</button></div>
+    </div>
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+  <div class="budget-bar" id="budgetBar"></div>
+  <div class="projects" id="projectsList"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDFcudZnsFMNpyFyYRLJdromIA5ByIXr48",
+  authDomain: "makeen-marketing-dashboard.firebaseapp.com",
+  databaseURL: "https://makeen-marketing-dashboard-default-rtdb.firebaseio.com",
+  projectId: "makeen-marketing-dashboard",
+  storageBucket: "makeen-marketing-dashboard.firebasestorage.app",
+  messagingSenderId: "224229924624",
+  appId: "1:224229924624:web:b5eab076b1cd3005910f95",
+  measurementId: "G-RH6LEWBYRS"
+};
+
+const ACCESS_CODE = "makeen2026";
+
+const DEFAULTS = [
+  {id:"m64",name:"مكين 64",loc:"حي العارض",units:48,sold:31,booked:7,leads:214,budget:85000,spent:62000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/43"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"أداء ممتاز، نسبة التحويل عالية. التركيز على الوحدات المتبقية بعروض محدودة."},
+  {id:"m63",name:"مكين 63",loc:"حي العارض",units:36,sold:22,booked:5,leads:187,budget:70000,spent:55000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/42"},{n:"حملة مؤثرين",d:false,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"محتاجين نفعّل حملة مؤثرين لتسريع بيع الوحدات المتبقية."},
+  {id:"m66",name:"مكين 66",loc:"حي الرمال",units:40,sold:12,booked:8,leads:156,budget:90000,spent:41000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/45"},{n:"حملة مؤثرين",d:false,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"البيع يحتاج دفعة. نسبة التحويل من الليدز أقل من المتوقع."},
+  {id:"m72",name:"مكين 72",loc:"حي الياسمين",units:32,sold:28,booked:2,leads:245,budget:75000,spent:71000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/50"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"شبه مكتمل! باقي وحدتين فقط. أفضل مشروع من حيث سرعة البيع."},
+  {id:"m85",name:"مكين 85",loc:"النسيم",units:52,sold:8,booked:4,leads:98,budget:110000,spent:28000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:false,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/60"},{n:"حملة مؤثرين",d:false,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"مشروع جديد، محتاج تكثيف الحملات. التصوير لم يكتمل بعد."},
+  {id:"m68",name:"مكين 68",loc:"حي الريان",units:30,sold:19,booked:3,leads:168,budget:65000,spent:48000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/48"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"أداء جيد ومستقر. الحي مطلوب والتحويلات ممتازة."},
+  {id:"m80",name:"مكين 80",loc:"حي الرمال",units:44,sold:15,booked:6,leads:134,budget:95000,spent:52000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/52"},{n:"حملة مؤثرين",d:false,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"تحسّن ملحوظ بعد تحديث التصاميم. المؤثرين الخطوة القادمة."},
+  {id:"sana",name:"سَنا مكين",loc:"القيروان",units:60,sold:18,booked:10,leads:312,budget:150000,spent:87000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/63"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"المشروع الرئيسي. أعلى ميزانية وأعلى ليدز."},
+  {id:"m71",name:"مكين 71",loc:"حي الروابي",units:28,sold:24,booked:1,leads:178,budget:60000,spent:57000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:true,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/49"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"قارب الاكتمال. 3 وحدات متبقية فقط."},
+  {id:"tali",name:"طليعة المشرقية",loc:"حي المشرقية",units:80,sold:22,booked:14,leads:410,budget:200000,spent:95000,tools:[{n:"فيديو رئيسي",d:true,l:""},{n:"تصوير احترافي",d:false,l:""},{n:"تصاميم سوشال",d:true,l:""},{n:"صفحة هبوط",d:true,l:"https://asasmakeen.com/ar/u/pu/3/51"},{n:"حملة مؤثرين",d:true,l:""},{n:"إعلانات مدفوعة",d:true,l:""}],note:"بيع على الخارطة. أكبر مشروع حاليًا."},
+];
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let DATA = [], openId = null;
+
+function doLogin(){
+  const name=document.getElementById('loginName').value.trim();
+  const code=document.getElementById('loginCode').value.trim();
+  const err=document.getElementById('loginErr');
+  if(!name){err.textContent='اكتب اسمك';err.style.display='block';return}
+  if(code!==ACCESS_CODE){err.textContent='رمز الدخول غير صحيح';err.style.display='block';return}
+  localStorage.setItem('makeen_user',name);showDash(name);
+}
+function doLogout(){localStorage.removeItem('makeen_user');document.getElementById('dashboard').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginName').value='';document.getElementById('loginCode').value=''}
+function showDash(name){document.getElementById('loginScreen').style.display='none';document.getElementById('dashboard').style.display='block';document.getElementById('userName').textContent='مرحبًا '+name;document.getElementById('dateDisplay').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});loadData()}
+window.onload=function(){const s=localStorage.getItem('makeen_user');if(s)showDash(s)}
+
+function loadData(){
+  db.ref('projects').on('value',snap=>{
+    const val=snap.val();
+    if(val){DATA=DEFAULTS.map(dp=>{const s=val[dp.id];return s?{...dp,...s,id:dp.id,name:dp.name,loc:dp.loc}:{...dp}})}
+    else{DATA=DEFAULTS.map(p=>({...p}));DATA.forEach(p=>{const{id,name,loc,...rest}=p;db.ref('projects/'+p.id).set(rest)})}
+    render();
+  });
+}
+
+function saveField(id,f,v){db.ref('projects/'+id+'/'+f).set(v)}
+function saveToolD(pid,i,v){db.ref('projects/'+pid+'/tools/'+i+'/d').set(v)}
+function saveToolL(pid,i,v){db.ref('projects/'+pid+'/tools/'+i+'/l').set(v)}
+
+function saleLabel(p){
+  const pct=Math.round(((p.sold+p.booked)/p.units)*100);
+  if(pct>=90)return{t:'قارب الاكتمال',c:'var(--green)'};
+  if(pct>=50)return{t:'بيع نشط',c:'var(--nv)'};
+  if(pct>=25)return{t:'جاري البيع',c:'var(--amber)'};
+  return{t:'بداية البيع',c:'var(--mr)'}
+}
+
+function ring(pct,color,sz){
+  const r=(sz-5)/2,c=2*Math.PI*r,o=c-(pct/100)*c;
+  return `<div class="ring" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}" style="transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#e8e4e0" stroke-width="5"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-text" style="color:${color}">${pct}%</div></div>`
+}
+
+function render(){
+  const tU=DATA.reduce((s,p)=>s+p.units,0),tS=DATA.reduce((s,p)=>s+p.sold,0),tB=DATA.reduce((s,p)=>s+p.booked,0),tL=DATA.reduce((s,p)=>s+p.leads,0),tBu=DATA.reduce((s,p)=>s+p.budget,0),tSp=DATA.reduce((s,p)=>s+p.spent,0),tR=tU-tS-tB,tPct=Math.round(((tS+tB)/tU)*100),sPct=Math.round((tSp/tBu)*100);
+
+  document.getElementById('statsRow').innerHTML=[
+    {n:tU,l:'إجمالي الوحدات',c:'#fff'},{n:tS,l:'مباع',c:'#5eead4'},{n:tB,l:'محجوز',c:'#fcd34d'},{n:tR,l:'متبقي',c:'#fca5a5'},{n:tL.toLocaleString(),l:'التسجيلات',c:'var(--b)'},{n:tPct+'%',l:'نسبة البيع الكلية',c:'#5eead4'}
+  ].map(s=>`<div class="stat-card"><div class="num" style="color:${s.c}">${s.n}</div><div class="lbl">${s.l}</div></div>`).join('');
+
+  document.getElementById('budgetBar').innerHTML=`<span style="font-size:11px;color:var(--dg);font-weight:600;white-space:nowrap">الميزانية الكلية</span><div class="bar-wrap"><div class="bar-fill" style="width:${sPct}%"></div></div><span style="font-size:12px;font-weight:700;color:var(--b);white-space:nowrap">${tSp.toLocaleString()} / ${tBu.toLocaleString()} ر.س</span><span style="font-size:11px;color:var(--dg)">(${sPct}%)</span>`;
+
+  document.getElementById('projectsList').innerHTML=DATA.map(p=>{
+    const sPct=Math.round((p.sold/p.units)*100),bPct=Math.round((p.booked/p.units)*100),rPct=100-sPct-bPct,rem=p.units-p.sold-p.booked,sl=saleLabel(p),tPct=sPct+bPct,tDone=p.tools.filter(t=>t.d).length,cpl=p.leads>0?Math.round(p.spent/p.leads):0,conv=p.leads>0?Math.round((p.sold/p.leads)*100):0,isO=openId===p.id;
+
+    return `<div class="card ${isO?'open':''}" id="card-${p.id}">
+      <div class="card-row" onclick="toggleCard('${p.id}')">
+        <div><div style="font-size:15px;font-weight:700;color:var(--g)">${p.name}</div><div style="font-size:11px;color:var(--dg)">${p.loc}</div></div>
+        ${ring(tPct,sl.c,48)}
+        <div><div class="sbar"><div style="width:${sPct}%;background:var(--green)"></div><div style="width:${bPct}%;background:var(--amber)"></div></div><div class="sbar-labels"><span><b style="color:var(--green)">${p.sold}</b> مباع</span><span><b style="color:var(--amber)">${p.booked}</b> محجوز</span><span><b style="color:var(--red)">${rem}</b> متبقي</span></div></div>
+        <div class="badge" style="background:${sl.c}15;color:${sl.c}">${sl.t}</div>
+        <div class="dots">${p.tools.map(t=>`<div class="dot" title="${t.n}" style="background:${t.d?'var(--g)':'var(--bd)'}"></div>`).join('')}</div>
+        <div class="arrow">◂</div>
+      </div>
+      ${isO?`<div class="expanded">
+        <div class="exp-col">
+          <div class="exp-title"><div class="accent"></div>حالة البيع والأرقام</div>
+          <div class="big-nums">
+            <div class="bn-card"><div class="val" style="color:var(--nv)">${p.leads}</div><div class="lbl">تسجيل اهتمام</div></div>
+            <div class="bn-card"><div class="val" style="color:var(--green)">${p.sold+p.booked}</div><div class="lbl">مباع + محجوز</div></div>
+            <div class="bn-card"><div class="val" style="color:var(--red)">${rem}</div><div class="lbl">متبقي من ${p.units}</div></div>
+          </div>
+          <div class="detail-bar"><div style="width:${sPct}%;background:var(--green)">${sPct>8?sPct+'%':''}</div><div style="width:${bPct}%;background:var(--amber)">${bPct>8?bPct+'%':''}</div><div style="flex:1;color:var(--dg)">${rPct>8?rPct+'%':''}</div></div>
+          <div class="legend"><span><div class="sq" style="background:var(--green)"></div>مباع</span><span><div class="sq" style="background:var(--amber)"></div>محجوز</span><span><div class="sq" style="background:#ece8e3"></div>متبقي</span></div>
+          <div class="kpis">
+            <div class="kpi" style="background:var(--gl)"><div class="val" style="color:var(--g)">${cpl} ر.س</div><div class="lbl">تكلفة التسجيل</div></div>
+            <div class="kpi" style="background:var(--bl)"><div class="val" style="color:var(--b)">${conv}%</div><div class="lbl">تسجيل → بيع</div></div>
+            <div class="kpi" style="background:var(--gl)"><div class="val" style="color:var(--g)">${p.spent.toLocaleString()}</div><div class="lbl">المصروف من ${p.budget.toLocaleString()}</div></div>
+          </div>
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+            <div><label class="edit-label">Leads</label><input class="edit-input" type="number" value="${p.leads}" onchange="saveField('${p.id}','leads',+this.value)"></div>
+            <div><label class="edit-label">محجوز</label><input class="edit-input" type="number" value="${p.booked}" onchange="saveField('${p.id}','booked',+this.value)"></div>
+            <div><label class="edit-label">مباع</label><input class="edit-input" type="number" value="${p.sold}" onchange="saveField('${p.id}','sold',+this.value)"></div>
+            <div><label class="edit-label">الميزانية</label><input class="edit-input" type="number" value="${p.budget}" onchange="saveField('${p.id}','budget',+this.value)"></div>
+            <div><label class="edit-label">المصروف</label><input class="edit-input" type="number" value="${p.spent}" onchange="saveField('${p.id}','spent',+this.value)"></div>
+            <div><label class="edit-label">الوحدات</label><input class="edit-input" type="number" value="${p.units}" onchange="saveField('${p.id}','units',+this.value)"></div>
+          </div>
+        </div>
+        <div class="exp-col">
+          <div class="exp-title"><div class="accent"></div>المواد الاتصالية (${tDone}/${p.tools.length})</div>
+          ${p.tools.map((t,i)=>`<div class="tool-row ${t.d?'done':''}">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="tool-check" style="background:${t.d?'var(--g)':'var(--bd)'}" onclick="saveToolD('${p.id}',${i},${!t.d})">
+                ${t.d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="white" stroke-width="1.5"/></svg>'}
+              </div>
+              <span style="font-size:12px;font-weight:600;color:${t.d?'var(--g)':'var(--dg)'}">${t.n}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${t.l?`<a href="${t.l}" target="_blank" style="font-size:10px;color:var(--nv);text-decoration:none;padding:2px 8px;border-radius:4px;background:rgba(19,37,86,.08)" onclick="event.stopPropagation()">رابط ↗</a>`:(t.d?'<span style="font-size:10px;color:var(--b)">✓ جاهز</span>':'')}
+              <input class="link-input" type="text" placeholder="رابط..." value="${t.l||''}" onchange="saveToolL('${p.id}',${i},this.value)" onclick="event.stopPropagation()">
+            </div>
+          </div>`).join('')}
+          <div class="exp-title" style="margin-top:16px"><div class="accent"></div>ملاحظات</div>
+          <textarea class="note-box" onchange="saveField('${p.id}','note',this.value)">${p.note||''}</textarea>
+        </div>
+      </div>`:''}
+    </div>`
+  }).join('');
+}
+
+function toggleCard(id){openId=openId===id?null:id;render()}
+</script>
+</body>
+</html>
