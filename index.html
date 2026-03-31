@@ -76,6 +76,10 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
       <button onclick="doLogout()">خروج</button>
     </div>
   </div>
+  <div style="padding:12px 24px 0;display:flex;gap:8px">
+    <button onclick="expandAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تكبير الجميع ↓</button>
+    <button onclick="collapseAll()" style="padding:6px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">تصغير الجميع ↑</button>
+  </div>
   <div class="projects-grid" id="projectsGrid"></div>
   <div style="text-align:center;padding:6px 24px 20px;font-size:9px;color:#c4bfb8">اضغط المادة لتفعيلها · كلك يمين للرابط · اضغط الأقسام للطي</div>
 </div>
@@ -355,6 +359,9 @@ function cardHTML(pid){
     ${secHTML(pid,4,'ملاحظات','#59132e',sumNote,s4)}
   </div>`;
 }
+
+function expandAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=true});render()}
+function collapseAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=false});render()}
 
 // ── Render ──
 function renderHeader(){
