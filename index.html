@@ -11,13 +11,17 @@
 body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--bk);min-height:100vh}
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--g)}
 .login-box{background:var(--w);border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-box h1{color:var(--g);font-size:22px;font-weight:800;margin-bottom:4px}
-.login-box p{color:var(--b);font-size:13px;margin-bottom:28px}
+.login-logo{width:160px;margin:0 auto 16px}
+.login-logo svg{width:100%;height:auto}
+.login-box h2{color:var(--b);font-size:13px;font-weight:500;margin-bottom:28px}
 .login-box input{width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid var(--bd);font-family:inherit;font-size:14px;margin-bottom:12px;outline:none}
 .login-box input:focus{border-color:var(--g)}
-.login-box button{width:100%;padding:12px;border-radius:10px;background:var(--g);color:var(--w);font-family:inherit;font-size:14px;font-weight:700;border:none;cursor:pointer}
+.login-box button{width:100%;padding:12px;border-radius:10px;background:var(--g);color:var(--w);font-family:inherit;font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:4px}
 .login-box button:hover{background:#004d4d}
 .login-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.remember-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;cursor:pointer;justify-content:flex-end}
+.remember-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--g);cursor:pointer;flex-shrink:0}
+.remember-row span{font-size:12px;color:var(--dg)}
 .header{background:var(--g);padding:18px 24px}
 .header-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
 .header h1{color:var(--w);font-size:19px;font-weight:800}
@@ -79,11 +83,14 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 
 <div id="loginScreen" class="login-wrap">
   <div class="login-box">
-    <h1>◆ أساس مكين</h1>
-    <p>لوحة متابعة المشاريع</p>
-    <input type="text" id="loginName" placeholder="اسم المستخدم" autocomplete="off">
-    <input type="password" id="loginCode" placeholder="كلمة المرور">
-    <button onclick="doLogin()">دخول</button>
+    <div class="login-logo"><svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228.1 118.58"><defs><style>.cls-1{fill:#0a4040}</style></defs><g id="Layer_1-2" data-name="Layer 1"><g><path class="cls-1" d="M171.42,116.8h0v-31.46s10.44-9.55,10.44-9.55l10.57,9.69v29.55h0v3.54s35.66,0,35.66,0V47.34S181.95,0,181.95,0l-46.14,47.34v71.24s35.61,0,35.61,0v-1.77ZM144.91,115.03h-5.91s0-66.23,0-66.23L181.95,5.01l42.95,43.8v66.23s-5.91,0-5.91,0v-51.47s-37.04-37.78-37.04-37.78l-37.04,37.78v51.47ZM153.34,115.03h-6.19s0-50.44,0-50.44l34.8-35.3,34.8,35.3v50.44s-6.19,0-6.19,0v-40.75s-28.61-26.95-28.61-26.95l-28.61,26.95v40.75ZM170.47,115.03h-16.16s0-40.3,0-40.3l27.65-25.89,27.65,25.89v40.3s-16.2,0-16.2,0v-29.99s-11.53-10.76-11.53-10.76l-11.4,10.61v30.13Z"/><g><path class="cls-1" d="M28.63,105.18l-4.78,13.4h2.93s.91-2.75.91-2.75h4.93s.88,2.75.88,2.75h3.04s-4.74-13.4-4.74-13.4h-3.17ZM28.45,113.51l1.74-5.27,1.69,5.27h-3.43Z"/><polygon class="cls-1" points="50.09 114.09 51.44 112.73 55.57 118.57 59.17 118.57 53.39 110.69 58.89 105.18 55.27 105.18 50.09 110.7 50.09 105.18 47.34 105.18 47.34 118.57 50.09 118.57 50.09 114.09"/><polygon class="cls-1" points="79.8 107.55 79.8 105.18 69.97 105.18 69.97 118.58 80.12 118.58 80.12 116.17 72.71 116.17 72.71 113.04 79.21 113.04 79.21 110.71 72.71 110.71 72.71 107.55 79.8 107.55"/><polygon class="cls-1" points="100.75 107.55 100.75 105.18 90.92 105.18 90.92 118.58 101.08 118.58 101.08 116.17 93.66 116.17 93.66 113.04 100.17 113.04 100.17 110.71 93.66 110.71 93.66 107.55 100.75 107.55"/><polygon class="cls-1" points="114.81 105.18 111.88 105.18 111.88 118.58 114.48 118.58 114.48 109.07 119.94 118.58 122.74 118.58 122.74 105.18 120.13 105.18 120.13 114.52 114.81 105.18"/><path class="cls-1" d="M27.27,84.61h15.03s2.07-2.13,2.07-2.13l2.07,2.13h17.96s18.65,0,18.65,0h39.76s0-23.44,0-23.44l-3.02,3.09h0s-.03.04-.03.04h-17.21s0,13.57,0,13.57h-7.04s0-13.63,0-13.63h-34.14s0-6.94,0-6.94h27.4s0-9.87,0-9.87l-3.05,3.13v.02s-.01,0-.01,0h0s-31.08,0-31.08,0v20.41s34.14,0,34.14,0v6.9s-40.97,0-40.97,0v-10.62s0-3.03,0-3.03h-9.69s2.9,2.97,2.9,2.97l.06.06h-.01v10.62s-13.79,0-13.79,0v-10.62s0,0,0,0h0s0,0,0,0h0s.08-.08.08-.08l2.87-2.94h-12.67s2.79,2.86,2.79,2.86l.18.17v17.44s-13.8,0-13.8,0v-17.44s0,0,0,0h0s2.95-3.03,2.95-3.03H0s0,27.28,0,27.28h27.27s0-6.89,0-6.89ZM109.28,71.04h6.8s0,6.83,0,6.83h-6.8s0-6.83,0-6.83Z"/><polygon class="cls-1" points="47.8 93.28 44.38 89.8 40.97 93.28 44.38 96.76 47.8 93.28"/><polygon class="cls-1" points="40.97 93.28 37.55 89.8 34.14 93.28 37.55 96.76 40.97 93.28"/><polygon class="cls-1" points="17.07 54.63 13.66 51.16 10.24 54.63 13.66 58.11 17.07 54.63"/><path class="cls-1" d="M13.05,118.58v-13.4s-4.03,0-4.03,0l-2.42,10.54-2.44-10.54H.09s0,13.4,0,13.4h2.61s-.02-10.99-.02-11.24l2.52,11.24h2.72s2.54-11.24,2.54-11.24c0,.26-.02,11.24-.02,11.24h2.61Z"/></g></g></g></svg></div>
+    <h2>لوحة معلومات الحملات البيعية</h2>
+    <form onsubmit="doLogin();return false" autocomplete="on">
+      <input type="text" id="loginName" name="username" placeholder="اسم المستخدم" autocomplete="username">
+      <input type="password" id="loginCode" name="password" placeholder="كلمة المرور" autocomplete="current-password">
+      <label class="remember-row"><span>تذكر هذا الجهاز</span><input type="checkbox" id="rememberMe" checked></label>
+      <button type="submit">دخول</button>
+    </form>
     <div id="loginErr" class="login-err"></div>
   </div>
 </div>
@@ -141,17 +148,21 @@ function doLogin(){
   if(!username){err.textContent='اكتب اسم المستخدم';err.style.display='block';return}
   if(!pass){err.textContent='اكتب كلمة المرور';err.style.display='block';return}
   btn.textContent='جاري التحقق...';btn.disabled=true;
-  db.ref('users/'+username.charAt(0).toUpperCase()+username.slice(1)).once('value',snap=>{
+  const key=username.charAt(0).toUpperCase()+username.slice(1);
+  db.ref('users/'+key).once('value',snap=>{
     btn.textContent='دخول';btn.disabled=false;
     if(!snap.exists()||snap.val()!==pass){
       err.textContent='اسم المستخدم أو كلمة المرور غير صحيحة';err.style.display='block';return;
     }
-    localStorage.setItem('makeen_user',username);showDash(username);
+    const remember=document.getElementById('rememberMe').checked;
+    if(remember){localStorage.setItem('makeen_user',key)}
+    else{sessionStorage.setItem('makeen_user',key);localStorage.removeItem('makeen_user')}
+    showDash(key);
   });
 }
-function doLogout(){localStorage.removeItem('makeen_user');document.getElementById('dashboard').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginName').value='';document.getElementById('loginCode').value=''}
+function doLogout(){localStorage.removeItem('makeen_user');sessionStorage.removeItem('makeen_user');document.getElementById('dashboard').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginName').value='';document.getElementById('loginCode').value=''}
 function showDash(name){document.getElementById('loginScreen').style.display='none';document.getElementById('dashboard').style.display='block';document.getElementById('userName').textContent='مرحبًا '+name;document.getElementById('dateDisplay').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});loadData()}
-window.onload=function(){const s=localStorage.getItem('makeen_user');if(s)showDash(s)}
+window.onload=function(){const s=localStorage.getItem('makeen_user')||sessionStorage.getItem('makeen_user');if(s)showDash(s)}
 
 function loadData(){
   db.ref('projects').on('value',snap=>{
