@@ -464,46 +464,117 @@ function renderTable(){
 
 function renderAnalytics(){
   Object.values(_charts).forEach(c=>c.destroy());_charts={};
-  const names=PROJECTS.map(p=>DATA[p.id]?p.name:'').filter(Boolean);
+
+  const sn=p=>p.name.replace('طليعة المشرقية','طليعة').replace('سَنا مكين','سنا').replace('مكين ','م');
+  const labels=PROJECTS.map(sn);
   const sold=PROJECTS.map(p=>DATA[p.id]?.sold||0);
   const booked=PROJECTS.map(p=>DATA[p.id]?.booked||0);
   const remain=PROJECTS.map(p=>{const d=DATA[p.id];return d?d.units-d.sold-d.booked:0});
-  const cpls=PROJECTS.map(p=>{const d=DATA[p.id];return d&&d.leads>0?Math.round(d.spent/d.leads):0});
-  const matPcts=PROJECTS.map(p=>{const d=DATA[p.id];return d?Math.round(d.tools.filter(t=>t.d).length/d.tools.length*100):0});
+  const leads=PROJECTS.map(p=>DATA[p.id]?.leads||0);
   const budgets=PROJECTS.map(p=>DATA[p.id]?.budget||0);
   const spents=PROJECTS.map(p=>DATA[p.id]?.spent||0);
-  const tSold=sold.reduce((a,b)=>a+b,0),tBooked=booked.reduce((a,b)=>a+b,0);
-  const tRemain=remain.reduce((a,b)=>a+b,0),tLeads=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.leads||0),0);
+  const cpls=PROJECTS.map(p=>{const d=DATA[p.id];return d&&d.leads>0?Math.round(d.spent/d.leads):0});
+  const mats=PROJECTS.map(p=>{const d=DATA[p.id];return d?Math.round(d.tools.filter(t=>t.d).length/d.tools.length*100):0});
+  const tSold=sold.reduce((a,b)=>a+b,0),tBooked=booked.reduce((a,b)=>a+b,0),tRemain=remain.reduce((a,b)=>a+b,0);
+  const tLeads=leads.reduce((a,b)=>a+b,0),tSpent=spents.reduce((a,b)=>a+b,0),tBudget=budgets.reduce((a,b)=>a+b,0);
   const tUnits=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.units||0),0);
-  const tSpent=spents.reduce((a,b)=>a+b,0),avgCPL=tLeads>0?Math.round(tSpent/tLeads):0;
+  const avgCPL=tLeads>0?Math.round(tSpent/tLeads):0;
+  const salePct=tUnits>0?Math.round((tSold+tBooked)/tUnits*100):0;
+  const budPct=Math.round(tSpent/tBudget*100);
+
+  const kpis=[
+    {v:tLeads.toLocaleString(),l:'إجمالي التسجيلات',sub:`عبر ${PROJECTS.length} مشروع`,subc:'#1b7a4a',tag:'هذا الشهر',tagBg:'#eef1f8',tagC:'#132556'},
+    {v:(tSold+tBooked)+'',l:'مباع + محجوز',sub:`${salePct}% من ${tUnits} وحدة`,subc:'#1b7a4a',bar:salePct,barC:'linear-gradient(90deg,#1b7a4a,#5bb38a)',tag:tRemain+' متبقي',tagBg:'#fdf0ee',tagC:'#c0392b'},
+    {v:avgCPL+' ر.س',l:'متوسط تكلفة الليد',sub:'إنفاق '+tSpent.toLocaleString()+' ر.س',subc:'var(--dg)',tag:'CPL',tagBg:'var(--bl)',tagC:'var(--b)'},
+    {v:Math.round(tBudget/1000)+'K ر.س',l:'إجمالي الميزانية',sub:'أُنفق '+Math.round(tSpent/1000)+'K · متبقي '+Math.round((tBudget-tSpent)/1000)+'K',subc:'var(--dg)',bar:budPct,barC:'linear-gradient(90deg,var(--g),#4a9e9e)',tag:budPct+'%',tagBg:'var(--gl)',tagC:'var(--g)'},
+  ];
 
   document.getElementById('analyticsContainer').innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px">
-      ${[
-        {v:tLeads.toLocaleString(),l:'إجمالي التسجيلات',c:'var(--nv)',bg:'#eef1f8'},
-        {v:Math.round((tSold+tBooked)/tUnits*100)+'%',l:'نسبة البيع الكلية',c:'#1b7a4a',bg:'#edf7f0'},
-        {v:avgCPL+' ر.س',l:'متوسط تكلفة الليد',c:'var(--b)',bg:'var(--bl)'},
-        {v:tSpent.toLocaleString(),l:'إجمالي الإنفاق',c:'var(--g)',bg:'var(--gl)'},
-      ].map(k=>`<div class="kpi-card" style="background:${k.bg}"><div style="font-size:22px;font-weight:800;color:${k.c}">${k.v}</div><div style="font-size:10px;color:var(--dg);margin-top:4px">${k.l}</div></div>`).join('')}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">مقارنة البيع لكل مشروع</div><canvas id="chSales" height="260"></canvas></div>
-      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">توزيع الوحدات الكلي</div><canvas id="chDonut" height="260"></canvas></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">تكلفة الليد CPL لكل مشروع</div><canvas id="chCPL" height="220"></canvas></div>
-      <div class="kpi-card"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">جاهزية المواد الاتصالية</div><canvas id="chMat" height="220"></canvas></div>
-    </div>
-    <div class="kpi-card" style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:12px">الميزانية والإنفاق لكل مشروع</div><canvas id="chBudget" height="140"></canvas></div>`;
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+    ${kpis.map(k=>`<div class="kpi-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:10px;font-weight:600;color:var(--dg)">${k.l}</span>
+        <span style="background:${k.tagBg};color:${k.tagC};padding:2px 8px;border-radius:5px;font-size:9px;font-weight:600">${k.tag}</span>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:var(--bk);letter-spacing:-.5px;line-height:1">${k.v}</div>
+      ${k.bar!==undefined?`<div style="margin:8px 0 2px;height:4px;border-radius:2px;background:#ece8e3;overflow:hidden"><div style="height:100%;width:${k.bar}%;background:${k.barC};transition:width .8s ease"></div></div>`:'<div style="margin-top:8px"></div>'}
+      <div style="font-size:10px;color:${k.subc}">${k.sub}</div>
+    </div>`).join('')}
+  </div>
 
-  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:true,textDirection:'rtl',bodyFont:{family:'IBM Plex Sans Arabic'},titleFont:{family:'IBM Plex Sans Arabic'}}},scales:{x:{ticks:{font:{family:'IBM Plex Sans Arabic',size:10}}},y:{ticks:{font:{family:'IBM Plex Sans Arabic',size:10}}}}};
-  const hOpts={...opts,indexAxis:'y',scales:{x:{...opts.scales?.x,ticks:{font:{family:'IBM Plex Sans Arabic',size:9}}},y:{...opts.scales?.y,ticks:{font:{family:'IBM Plex Sans Arabic',size:9}}}}};
+  <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="kpi-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div><div style="font-size:14px;font-weight:700;color:var(--bk)">نظرة عامة على التسجيلات والمبيعات</div><div style="font-size:10px;color:var(--dg);margin-top:3px">تسجيلات الاهتمام مقارنةً بالمبيعات لكل مشروع</div></div>
+        <div style="display:flex;gap:14px;font-size:9px;color:var(--dg);white-space:nowrap;margin-top:4px">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:18px;height:3px;border-radius:2px;background:#003f3f;display:inline-block"></span>تسجيلات</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:18px;height:3px;border-radius:2px;background:#a88575;display:inline-block"></span>مباع + محجوز</span>
+        </div>
+      </div>
+      <div style="height:220px"><canvas id="chArea"></canvas></div>
+    </div>
+    <div class="kpi-card">
+      <div style="margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--bk)">توزيع الوحدات</div><div style="font-size:10px;color:var(--dg);margin-top:3px">إجمالي ${tUnits} وحدة</div></div>
+      <div style="height:190px"><canvas id="chDonut"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px">
+        ${[{l:'مباع',v:tSold,c:'#1b7a4a',bg:'#edf7f0'},{l:'محجوز',v:tBooked,c:'#d4850a',bg:'#fef7ec'},{l:'متبقي',v:tRemain,c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:8px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:18px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:2px">${x.l}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>
 
-  _charts.sales=new Chart(document.getElementById('chSales'),{type:'bar',data:{labels:names,datasets:[{label:'مباع',data:sold,backgroundColor:'#1b7a4a',borderRadius:3,stack:'s'},{label:'محجوز',data:booked,backgroundColor:'#d4850a',borderRadius:3,stack:'s'},{label:'متبقي',data:remain,backgroundColor:'#ece8e3',borderRadius:3,stack:'s'}]},options:{...hOpts,plugins:{...hOpts.plugins,legend:{display:true,position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:10},boxWidth:10}}}}});
-  _charts.donut=new Chart(document.getElementById('chDonut'),{type:'doughnut',data:{labels:['مباع','محجوز','متبقي'],datasets:[{data:[tSold,tBooked,tRemain],backgroundColor:['#1b7a4a','#d4850a','#ece8e3'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:11},boxWidth:12}},tooltip:{rtl:true,bodyFont:{family:'IBM Plex Sans Arabic'}}}}});
-  _charts.cpl=new Chart(document.getElementById('chCPL'),{type:'bar',data:{labels:names,datasets:[{data:cpls,backgroundColor:'#a88575',borderRadius:4}]},options:{...hOpts,plugins:{...hOpts.plugins,annotation:{annotations:{line:{type:'line',xMin:40,xMax:40,borderColor:'#c0392b',borderWidth:1.5,borderDash:[4,3]}}}}}});
-  _charts.mat=new Chart(document.getElementById('chMat'),{type:'bar',data:{labels:names,datasets:[{data:matPcts,backgroundColor:matPcts.map(v=>v===100?'#1b7a4a':v>=60?'#003f3f':'#d4850a'),borderRadius:4}]},options:{...hOpts,scales:{...hOpts.scales,x:{...hOpts.scales.x,max:100,ticks:{callback:v=>v+'%'}}}}});
-  _charts.budget=new Chart(document.getElementById('chBudget'),{type:'bar',data:{labels:names,datasets:[{label:'الميزانية',data:budgets,backgroundColor:'rgba(0,63,63,.15)',borderRadius:4},{label:'المصروف',data:spents,backgroundColor:'#a88575',borderRadius:4}]},options:{...opts,plugins:{...opts.plugins,legend:{display:true,position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:10},boxWidth:10}}}}});
+  <div class="kpi-card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div><div style="font-size:14px;font-weight:700;color:var(--bk)">مقارنة الميزانية والإنفاق</div><div style="font-size:10px;color:var(--dg);margin-top:3px">بالريال السعودي لكل مشروع</div></div>
+      <div style="display:flex;gap:14px;font-size:9px;color:var(--dg)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,63,63,.15);display:inline-block"></span>الميزانية</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#a88575;display:inline-block"></span>المصروف</span>
+      </div>
+    </div>
+    <div style="height:150px"><canvas id="chBudget"></canvas></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="kpi-card">
+      <div style="margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--bk)">تكلفة الليد لكل مشروع</div><div style="font-size:10px;color:var(--dg);margin-top:3px">ريال لكل تسجيل · أخضر ≤40 · برتقالي ≤60 · أحمر >60</div></div>
+      <div style="height:200px"><canvas id="chCPL"></canvas></div>
+    </div>
+    <div class="kpi-card">
+      <div style="margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--bk)">جاهزية المواد الاتصالية</div><div style="font-size:10px;color:var(--dg);margin-top:3px">نسبة المواد المكتملة من 13 مادة</div></div>
+      <div style="height:200px"><canvas id="chMat"></canvas></div>
+    </div>
+  </div>`;
+
+  Chart.defaults.font.family="'IBM Plex Sans Arabic',sans-serif";
+  Chart.defaults.color='#6b6460';
+  const F={size:9},FN={size:10};
+  const noG={grid:{display:false},border:{display:false},ticks:{font:F}};
+  const softG={grid:{color:'#f0ece8',drawBorder:false},border:{display:false},ticks:{font:F}};
+  const tip={rtl:true,backgroundColor:'rgba(20,20,20,.82)',titleFont:{size:11},bodyFont:{size:10},padding:10,cornerRadius:8,borderColor:'rgba(255,255,255,.08)',borderWidth:1};
+  const base={responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:tip}};
+
+  // Area chart
+  const aC=document.getElementById('chArea').getContext('2d');
+  const gA=aC.createLinearGradient(0,0,0,220);gA.addColorStop(0,'rgba(0,63,63,.18)');gA.addColorStop(1,'rgba(0,63,63,0)');
+  const gB=aC.createLinearGradient(0,0,0,220);gB.addColorStop(0,'rgba(168,133,117,.18)');gB.addColorStop(1,'rgba(168,133,117,0)');
+  _charts.area=new Chart(aC,{type:'line',data:{labels,datasets:[
+    {label:'تسجيلات',data:leads,borderColor:'#003f3f',backgroundColor:gA,borderWidth:2.5,fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:'#003f3f',pointBorderWidth:2,pointHoverRadius:6},
+    {label:'مباع+محجوز',data:sold.map((v,i)=>v+booked[i]),borderColor:'#a88575',backgroundColor:gB,borderWidth:2,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:'#a88575',pointBorderWidth:2,pointHoverRadius:5}
+  ]},options:{...base,scales:{x:{...noG},y:{...softG,ticks:{font:F,callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}}}}});
+
+  // Donut
+  _charts.donut=new Chart(document.getElementById('chDonut'),{type:'doughnut',data:{labels:['مباع','محجوز','متبقي'],datasets:[{data:[tSold,tBooked,tRemain],backgroundColor:['#1b7a4a','#d4850a','#e8e4e0'],borderWidth:0,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'74%',animation:{duration:1000,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{...tip,callbacks:{label:ctx=>' '+ctx.label+': '+ctx.raw+' وحدة'}}}}});
+
+  // Budget
+  _charts.budget=new Chart(document.getElementById('chBudget'),{type:'bar',data:{labels,datasets:[
+    {label:'الميزانية',data:budgets,backgroundColor:'rgba(0,63,63,.1)',borderRadius:6,borderSkipped:false,barPercentage:.7},
+    {label:'المصروف',data:spents,backgroundColor:'#a88575',borderRadius:6,borderSkipped:false,barPercentage:.7}
+  ]},options:{...base,scales:{x:{...noG},y:{...softG,ticks:{font:F,callback:v=>Math.round(v/1000)+'K'}}}}});
+
+  // CPL
+  _charts.cpl=new Chart(document.getElementById('chCPL'),{type:'bar',data:{labels,datasets:[{data:cpls,backgroundColor:cpls.map(v=>v<=40?'#1b7a4a':v<=60?'#d4850a':'#c0392b'),borderRadius:6,borderSkipped:false,barPercentage:.65}]},options:{...base,indexAxis:'y',scales:{y:{...noG,ticks:{font:F}},x:{...softG,ticks:{font:F}}}}});
+
+  // Materials
+  _charts.mat=new Chart(document.getElementById('chMat'),{type:'bar',data:{labels,datasets:[{data:mats,backgroundColor:mats.map(v=>v===100?'#1b7a4a':v>=70?'#003f3f':'#d4850a'),borderRadius:6,borderSkipped:false,barPercentage:.65}]},options:{...base,indexAxis:'y',scales:{y:{...noG,ticks:{font:F}},x:{...softG,max:100,ticks:{font:F,callback:v=>v+'%'}}}}});
 }
 
 // ── Render ──
