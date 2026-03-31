@@ -6,7 +6,7 @@
 <title>أساس مكين | لوحة متابعة المشاريع</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--g:#003f3f;--b:#a88575;--bk:#222;--nv:#132556;--mr:#59132e;--dg:#352f2e;--w:#fff;--bg:#f5f3f0;--bd:#e0dbd5;--green:#1b7a4a;--red:#c0392b}
+:root{--g:#003f3f;--b:#a88575;--bk:#222;--nv:#132556;--mr:#59132e;--dg:#352f2e;--w:#fff;--bg:#f5f3f0;--gl:#e8f0ef;--bl:#f5ede9;--bd:#e0dbd5;--green:#1b7a4a;--red:#c0392b;--amber:#d4850a}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--bk);min-height:100vh}
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--g)}
@@ -28,12 +28,18 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .dash-stat .v{font-size:17px;font-weight:700}.dash-stat .l{font-size:9px;color:rgba(255,255,255,.45);margin-top:1px}
 .dash-meta{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.4);font-size:11px;margin-top:10px;justify-content:flex-end}
 .dash-meta button{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);padding:3px 10px;border-radius:6px;font-size:10px;cursor:pointer;font-family:inherit}
-.projects-grid{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
-.pcard{background:var(--w);border-radius:12px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.05);border:1px solid var(--bd)}
+.projects-grid{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,63,63,.45);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
-.modal-box{background:var(--w);border-radius:14px;width:90%;max-width:440px;padding:24px;box-shadow:0 16px 48px rgba(0,0,0,.15)}
-.edit-input{width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--bd);font-size:13px;font-family:inherit;box-sizing:border-box}
-.edit-label{font-size:10px;color:var(--dg);display:block;margin-bottom:3px}
+.modal-box{background:var(--w);border-radius:14px;width:90%;max-width:440px;padding:24px;box-shadow:0 16px 48px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
+.ei{width:100%;padding:7px 10px;border-radius:7px;border:1.5px solid var(--bd);font-size:12px;font-family:inherit;box-sizing:border-box;outline:none}
+.ei:focus{border-color:var(--g)}
+.el{font-size:9px;color:var(--dg);display:block;margin-bottom:2px}
+.sec-hdr{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .15s}
+.sec-hdr:hover{background:#faf9f7}
+.sec-body{padding:0 16px 12px}
+.tool-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--bd);background:var(--w);margin:2px}
+.tool-pill.done{background:var(--gl);border-color:rgba(0,63,63,.18)}
+.tool-chk{width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
 @media(max-width:680px){.projects-grid{padding:12px;grid-template-columns:1fr}.dash-stats{gap:14px}.dash-stat .v{font-size:14px}}
 </style>
 </head>
@@ -71,7 +77,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
     </div>
   </div>
   <div class="projects-grid" id="projectsGrid"></div>
-  <div style="text-align:center;padding:6px 24px 20px;font-size:9px;color:#c4bfb8">اضغط المادة لتفعيلها · اضغط الملاحظة لتعديلها · زر تعديل للأرقام</div>
+  <div style="text-align:center;padding:6px 24px 20px;font-size:9px;color:#c4bfb8">اضغط المادة لتفعيلها · كلك يمين للرابط · اضغط الأقسام للطي</div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
@@ -79,8 +85,9 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
     <div style="font-size:15px;font-weight:700;color:var(--g);margin-bottom:2px" id="modalTitle"></div>
     <div style="font-size:11px;color:var(--dg);margin-bottom:14px" id="modalSub"></div>
     <div id="modalBody"></div>
-    <div style="margin-top:16px">
-      <button onclick="closeModal()" style="padding:8px 28px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">تم</button>
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button onclick="closeModal()" style="flex:1;padding:9px;border-radius:8px;background:var(--g);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">حفظ</button>
+      <button onclick="cancelModal()" style="padding:9px 16px;border-radius:8px;background:var(--w);color:var(--dg);border:1px solid var(--bd);font-size:13px;cursor:pointer;font-family:inherit">إلغاء</button>
     </div>
   </div>
 </div>
@@ -101,10 +108,10 @@ const firebaseConfig = {
   appId: "1:224229924624:web:b5eab076b1cd3005910f95"
 };
 
-const MATERIALS = [
-  {key:"video",label:"فيديو"},{key:"photos",label:"صور"},
-  {key:"designs",label:"تصاميم"},{key:"landing",label:"صفحة هبوط"},
-  {key:"influencers",label:"مؤثرين"},{key:"ads",label:"إعلانات"},
+const GROUPS = [
+  {title:"المواد الأساسية", keys:[0,1,2,3,4,5]},
+  {title:"الترويج المدفوع", keys:[6,7,8,9,10]},
+  {title:"المؤثرين", keys:[11,12]},
 ];
 
 const PROJECTS = [
@@ -120,22 +127,27 @@ const PROJECTS = [
   {id:"m71",name:"مكين 71",loc:"حي الروابي"},
 ];
 
+function mkT(done, links){
+  const names=["الملف التعريفي للمشروع","فيديو تعريفي بالمشروع","تصوير فوتوغرافي","تصميم بدأ البيع","تصاميم داعمة","صفحة الهبوط","سناب شات","إنستقرام + تيكتوك","إكس (X)","قوقل Ads","Retargeting","مؤثر عقاري","مؤثر لايف ستايل"];
+  return names.map((n,i)=>({n,d:!!done[i],l:(links&&links[i])||""}));
+}
+
 const DEFAULTS = {
-  sana:{leads:312,booked:28,totalUnits:60,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/63"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"المشروع الرئيسي. أعلى ميزانية وأعلى ليدز."},
-  tali:{leads:410,booked:36,totalUnits:80,materials:{video:{done:true,link:""},photos:{done:false,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/51"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"بيع على الخارطة. أكبر مشروع حاليًا."},
-  m64:{leads:214,booked:38,totalUnits:48,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/43"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"أداء ممتاز، نسبة التحويل عالية."},
-  m63:{leads:187,booked:27,totalUnits:36,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/42"},influencers:{done:false,link:""},ads:{done:true,link:""}},notes:"محتاجين نفعّل حملة مؤثرين."},
-  m66:{leads:156,booked:20,totalUnits:40,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/45"},influencers:{done:false,link:""},ads:{done:true,link:""}},notes:"البيع يحتاج دفعة."},
-  m72:{leads:245,booked:30,totalUnits:32,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/50"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"شبه مكتمل! أفضل مشروع من حيث سرعة البيع."},
-  m85:{leads:98,booked:12,totalUnits:52,materials:{video:{done:true,link:""},photos:{done:false,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/60"},influencers:{done:false,link:""},ads:{done:true,link:""}},notes:"مشروع جديد، التصوير لم يكتمل بعد."},
-  m68:{leads:168,booked:22,totalUnits:30,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/48"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"أداء جيد ومستقر."},
-  m80:{leads:134,booked:21,totalUnits:44,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/52"},influencers:{done:false,link:""},ads:{done:true,link:""}},notes:"تحسّن ملحوظ بعد تحديث التصاميم."},
-  m71:{leads:178,booked:25,totalUnits:28,materials:{video:{done:true,link:""},photos:{done:true,link:""},designs:{done:true,link:""},landing:{done:true,link:"https://asasmakeen.com/ar/u/pu/3/49"},influencers:{done:true,link:""},ads:{done:true,link:""}},notes:"قارب الاكتمال. 3 وحدات متبقية فقط."},
+  sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:60,sold:18,booked:10,leads:2175,budget:150000,spent:87000,promoStart:"2026-01-15",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/63"}),note:"المشروع الرئيسي. أعلى ميزانية ترويجية. كل المواد جاهزة ومفعّلة."},
+  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:80,sold:22,booked:14,leads:2375,budget:200000,spent:95000,promoStart:"2026-03-16",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"بيع على الخارطة. أكبر مشروع حاليًا. التصوير ينتظر اكتمال الواجهات."},
+  m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:48,sold:31,booked:7,leads:1550,budget:85000,spent:62000,promoStart:"2025-11-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/43"}),note:"أداء ممتاز في التسجيلات. التركيز على إغلاق العملاء المترددين في الوحدات المتبقية."},
+  m63:{url:"https://asasmakeen.com/ar/u/pu/3/42",units:36,sold:22,booked:5,leads:1375,budget:70000,spent:55000,promoStart:"2025-12-10",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/42"}),note:"أداء جيد. حملة المؤثرين ستضاف قريباً لتسريع بيع الوحدات المتبقية."},
+  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:40,sold:12,booked:8,leads:1025,budget:90000,spent:41000,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"البيع يحتاج دفعة إضافية. حملة المؤثرين قيد التنسيق مع 3 مؤثرين."},
+  m72:{url:"https://asasmakeen.com/ar/u/pu/3/50",units:32,sold:28,booked:2,leads:1775,budget:75000,spent:71000,promoStart:"2025-10-15",promoEnd:"2026-04-15",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,1],{5:"https://asasmakeen.com/ar/u/pu/3/50"}),note:"شبه مكتمل! وحدتان متبقيتان فقط. أفضل نسبة تحويل من بين جميع المشاريع."},
+  m85:{url:"https://asasmakeen.com/ar/u/pu/3/60",units:52,sold:8,booked:4,leads:700,budget:110000,spent:28000,promoStart:"2026-03-01",promoEnd:null,tools:mkT([1,0,0,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/60"}),note:"مشروع جديد. الفيديو والتصوير قيد الإنتاج. مرحلة التسخين الأولى."},
+  m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:30,sold:19,booked:3,leads:1200,budget:65000,spent:48000,promoStart:"2025-12-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/48"}),note:"أداء جيد ومستقر. الحي مطلوب والتحويلات ممتازة. بحاجة لتكثيف Retargeting."},
+  m80:{url:"https://asasmakeen.com/ar/u/pu/3/52",units:44,sold:15,booked:6,leads:1300,budget:95000,spent:52000,promoStart:"2026-01-20",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/52"}),note:"تحسّن ملحوظ بعد تحديث التصاميم. المؤثرين الخطوة القادمة."},
+  m71:{url:"https://asasmakeen.com/ar/u/pu/3/49",units:28,sold:24,booked:1,leads:1425,budget:60000,spent:57000,promoStart:"2025-10-01",promoEnd:"2026-04-30",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/49"}),note:"قارب الاكتمال! 3 وحدات متبقية فقط. تركيز على الإغلاق النهائي."},
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let DATA = {};
+let DATA = {}, OPEN = {};
 
 // ── Login ──
 function doLogin(){
@@ -176,188 +188,196 @@ window.onload=function(){
 };
 
 // ── Data ──
-function migrateOld(old){
-  const keys=['video','photos','designs','landing','influencers','ads'];
-  const materials={};
-  keys.forEach((k,i)=>{const t=old.tools&&old.tools[i];materials[k]={done:t?!!t.d:false,link:t?(t.l||''):''};});
-  return{leads:old.leads||0,booked:(old.sold||0)+(old.booked||0),totalUnits:old.units||0,materials,notes:old.note||''};
-}
-
 function loadData(){
   db.ref('projects').on('value',snap=>{
-    const val=snap.val();
-    DATA={};
+    const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw){
-        if(raw.totalUnits!==undefined){DATA[p.id]={...raw}}
-        else{DATA[p.id]=migrateOld(raw);db.ref('projects/'+p.id).set(DATA[p.id])}
-      }else{
-        DATA[p.id]=JSON.parse(JSON.stringify(DEFAULTS[p.id]));
-        db.ref('projects/'+p.id).set(DATA[p.id]);
-      }
+      if(raw&&Array.isArray(raw.tools)&&raw.tools.length===13){DATA[p.id]={...raw}}
+      else{DATA[p.id]=JSON.parse(JSON.stringify(DEFAULTS[p.id]));db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
   });
 }
 
-function toggleMaterial(pid,mk){
-  const v=!DATA[pid].materials[mk].done;
-  DATA[pid].materials[mk].done=v;
-  db.ref('projects/'+pid+'/materials/'+mk+'/done').set(v);
-  render();
+// ── Sections ──
+function secOpen(pid,si){const k=pid+'_'+si;return k in OPEN?OPEN[k]:si<4}
+function togSec(pid,si){
+  OPEN[pid+'_'+si]=!secOpen(pid,si);
+  const el=document.getElementById('pcard-'+pid);
+  if(el)el.outerHTML=cardHTML(pid);
+}
+
+// ── Tools ──
+function togTool(pid,i){
+  const v=!DATA[pid].tools[i].d;
+  DATA[pid].tools[i].d=v;
+  db.ref('projects/'+pid+'/tools/'+i+'/d').set(v);
+  const el=document.getElementById('pcard-'+pid);
+  if(el)el.outerHTML=cardHTML(pid);
+  renderHeader();
 }
 
 // ── Modal ──
 let _modal=null;
-function openModal(type,pid,mk){
-  _modal={type,pid,mk};
+function openModal(type,pid,extra){
+  _modal={type,pid,extra};
   const proj=PROJECTS.find(x=>x.id===pid);
   const d=DATA[pid];
   document.getElementById('modalTitle').textContent=proj.name;
-  if(type==='note'){
+  if(type==='edit'){
+    document.getElementById('modalSub').textContent='تعديل الأرقام ومدة الحملة';
+    document.getElementById('modalBody').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><label class="el">التسجيلات</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
+        <div><label class="el">الحجوزات</label><input class="ei" id="e_booked" type="number" value="${d.booked}"></div>
+        <div><label class="el">المبيعات</label><input class="ei" id="e_sold" type="number" value="${d.sold}"></div>
+        <div><label class="el">الوحدات</label><input class="ei" id="e_units" type="number" value="${d.units}"></div>
+        <div><label class="el">الميزانية</label><input class="ei" id="e_budget" type="number" value="${d.budget}"></div>
+        <div><label class="el">المصروف</label><input class="ei" id="e_spent" type="number" value="${d.spent}"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">مدة الحملة</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="el">تاريخ البداية</label><input class="ei" id="e_ps" type="date" value="${d.promoStart||''}"></div>
+        <div><label class="el">تاريخ الانتهاء (فاضي = مستمرة)</label><input class="ei" id="e_pe" type="date" value="${d.promoEnd||''}"></div>
+      </div>`;
+    setTimeout(()=>document.getElementById('e_leads')?.focus(),50);
+  }else if(type==='note'){
     document.getElementById('modalSub').textContent='ملاحظات';
-    document.getElementById('modalBody').innerHTML=`<textarea id="mta" style="width:100%;min-height:90px;padding:12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.7;direction:rtl">${d.notes||''}</textarea>`;
-    setTimeout(()=>document.getElementById('mta')?.focus(),50);
-  }else if(type==='link'){
-    const mat=MATERIALS.find(x=>x.key===mk);
-    const lv=d.materials[mk]?.link||'';
-    document.getElementById('modalSub').textContent='رابط: '+mat.label;
-    document.getElementById('modalBody').innerHTML=`<input id="mli" dir="ltr" type="url" value="${lv}" placeholder="https://..." style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:monospace;box-sizing:border-box">${lv?`<a href="${lv}" target="_blank" style="display:inline-block;margin-top:8px;font-size:12px;color:var(--nv)">فتح الرابط ↗</a>`:''}`;
-    setTimeout(()=>document.getElementById('mli')?.focus(),50);
-  }else if(type==='edit'){
-    document.getElementById('modalSub').textContent='تعديل الأرقام';
-    document.getElementById('modalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><label class="edit-label">تسجيلات</label><input class="edit-input" id="e1" type="number" value="${d.leads}"></div><div><label class="edit-label">محجوز / مباع</label><input class="edit-input" id="e2" type="number" value="${d.booked}"></div><div><label class="edit-label">إجمالي الوحدات</label><input class="edit-input" id="e3" type="number" value="${d.totalUnits}"></div></div>`;
-  }else if(type==='campaign'){
-    document.getElementById('modalSub').textContent='مدة الحملة الترويجية';
-    document.getElementById('modalBody').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label class="edit-label">تاريخ بداية الترويج</label><input class="edit-input" id="cs" type="date" value="${d.campaignStart||''}"></div><div><label class="edit-label">تاريخ الانتهاء (اختياري)</label><input class="edit-input" id="ce" type="date" value="${d.campaignEnd||''}"></div></div><div style="margin-top:8px;font-size:10px;color:var(--dg)">اتركه فارغاً إذا لازالت الحملة مستمرة</div>${d.campaignStart?`<button onclick="clearCampaign('${pid}')" style="margin-top:10px;background:none;border:1px solid #ddd;border-radius:6px;padding:4px 12px;font-size:11px;color:#aaa;cursor:pointer;font-family:inherit">مسح التواريخ</button>`:''}`;
-    setTimeout(()=>document.getElementById('cs')?.focus(),50);
+    document.getElementById('modalBody').innerHTML=`<textarea id="m_note" style="width:100%;min-height:90px;padding:12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;line-height:1.7;direction:rtl">${d.note||''}</textarea>`;
+    setTimeout(()=>document.getElementById('m_note')?.focus(),50);
+  }else if(type==='toollink'){
+    const ti=extra,t=d.tools[ti];
+    document.getElementById('modalSub').textContent='رابط: '+t.n;
+    document.getElementById('modalBody').innerHTML=`<input id="m_tl" dir="ltr" type="url" value="${t.l||''}" placeholder="https://..." style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:monospace;box-sizing:border-box">${t.l?`<a href="${t.l}" target="_blank" style="display:inline-block;margin-top:8px;font-size:12px;color:var(--nv)">فتح الرابط ↗</a>`:''}`;
+    setTimeout(()=>document.getElementById('m_tl')?.focus(),50);
   }
   document.getElementById('modalOverlay').style.display='flex';
 }
 function closeModal(){
   if(!_modal)return;
-  const{type,pid,mk}=_modal;
-  if(type==='note'){const v=document.getElementById('mta')?.value||'';DATA[pid].notes=v;db.ref('projects/'+pid+'/notes').set(v);}
-  else if(type==='link'){const v=document.getElementById('mli')?.value||'';DATA[pid].materials[mk].link=v;db.ref('projects/'+pid+'/materials/'+mk+'/link').set(v);}
-  else if(type==='edit'){
-    const l=+(document.getElementById('e1')?.value||0),b=+(document.getElementById('e2')?.value||0),u=+(document.getElementById('e3')?.value||0);
-    DATA[pid].leads=l;DATA[pid].booked=b;DATA[pid].totalUnits=u;
-    db.ref('projects/'+pid+'/leads').set(l);db.ref('projects/'+pid+'/booked').set(b);db.ref('projects/'+pid+'/totalUnits').set(u);
-  }else if(type==='campaign'){
-    const s=document.getElementById('cs')?.value||'',e=document.getElementById('ce')?.value||'';
-    DATA[pid].campaignStart=s;DATA[pid].campaignEnd=e;
-    db.ref('projects/'+pid+'/campaignStart').set(s);db.ref('projects/'+pid+'/campaignEnd').set(e);
+  const{type,pid,extra}=_modal;
+  const d=DATA[pid];
+  if(type==='edit'){
+    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,promoStart:document.getElementById('e_ps').value||null,promoEnd:document.getElementById('e_pe').value||null};
+    Object.assign(d,f);
+    Object.entries(f).forEach(([k,v])=>db.ref('projects/'+pid+'/'+k).set(v));
+  }else if(type==='note'){
+    const v=document.getElementById('m_note')?.value||'';d.note=v;db.ref('projects/'+pid+'/note').set(v);
+  }else if(type==='toollink'){
+    const v=document.getElementById('m_tl')?.value||'';d.tools[extra].l=v;db.ref('projects/'+pid+'/tools/'+extra+'/l').set(v);
   }
-  _modal=null;document.getElementById('modalOverlay').style.display='none';render();
+  _modal=null;document.getElementById('modalOverlay').style.display='none';
+  const el=document.getElementById('pcard-'+pid);
+  if(el)el.outerHTML=cardHTML(pid);
+  renderHeader();
+}
+function cancelModal(){_modal=null;document.getElementById('modalOverlay').style.display='none';}
+
+// ── Helpers ──
+function fmtDate(s){if(!s)return'—';const d=new Date(s);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
+function weeksElapsed(s){if(!s)return 0;return Math.max(0,Math.floor((new Date()-new Date(s))/(7*864e5)))}
+function weeksText(w){if(w===0)return'أقل من أسبوع';if(w===1)return'أسبوع واحد';if(w===2)return'أسبوعين';return w+' أسابيع'}
+function saleCol(pct){return pct>=90?'#1b7a4a':pct>=50?'#132556':pct>=25?'#d4850a':'#59132e'}
+function ringHTML(pct,color,sz){
+  sz=sz||52;const st=5,r=(sz-st)/2,c=2*Math.PI*r,o=c-(pct/100)*c;
+  return `<div style="position:relative;width:${sz}px;height:${sz}px;flex-shrink:0"><svg width="${sz}" height="${sz}" style="transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#e8e4e0" stroke-width="${st}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${st}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round" style="transition:stroke-dashoffset .5s"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:${color};line-height:1">${pct}%</div></div>`;
+}
+function secHTML(pid,si,title,accent,summary,content){
+  const open=secOpen(pid,si);
+  return `<div style="border-bottom:1px solid var(--bd)"><div class="sec-hdr" onclick="togSec('${pid}',${si})" style="background:${open?'transparent':'#faf9f7'}"><div style="display:flex;align-items:center;gap:6px"><div style="width:3px;height:11px;border-radius:2px;background:${accent};flex-shrink:0"></div><span style="font-size:11px;font-weight:700;color:var(--g)">${title}</span></div><div style="display:flex;align-items:center;gap:8px">${!open&&summary?`<span style="font-size:10px;color:var(--dg);font-weight:500">${summary}</span>`:''}<span style="font-size:12px;color:var(--dg);display:inline-block;transition:transform .2s;transform:${open?'rotate(90deg)':'rotate(0deg)'}">◂</span></div></div>${open?`<div class="sec-body">${content}</div>`:''}</div>`;
 }
 
-// ── Campaign ──
-function parseDate(s){
-  if(!s)return null;
-  if(s.includes('-')){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
-  return null;
-}
-function fmtDate(s){
-  const d=parseDate(s);if(!d)return s;
-  return d.toLocaleDateString('ar-SA',{day:'2-digit',month:'2-digit'});
-}
-function campaignHTML(d,pid){
-  const start=d.campaignStart,end=d.campaignEnd;
-  if(!start){
-    return `<div onclick="openModal('campaign','${pid}')" style="padding:0 18px 12px"><div style="padding:6px 10px;border-radius:7px;border:1px dashed var(--bd);font-size:10px;color:#ccc;cursor:pointer;text-align:center">+ تحديد مدة الحملة الترويجية</div></div>`;
-  }
-  const today=new Date();today.setHours(0,0,0,0);
-  const sd=parseDate(start);
-  let elapsed='';
-  if(sd&&sd<=today){
-    const w=Math.floor((today-sd)/(7*864e5));
-    const days=Math.floor((today-sd)/864e5);
-    elapsed=w===0?(days===0?'اليوم الأول':`يوم ${days+1}`):w===1?'أسبوع واحد':`${w} أسابيع`;
-  }else if(sd&&sd>today){elapsed='لم تبدأ بعد'}
-  let statusTxt,statusCol;
-  if(end){
-    const ed=parseDate(end);
-    if(ed&&ed<today){statusTxt=`انتهت ${fmtDate(end)}`;statusCol='#aaa'}
-    else{statusTxt=`تنتهي ${fmtDate(end)}`;statusCol='var(--amber)'}
-  }else{statusTxt='لازالت مستمرة';statusCol='#1b7a4a'}
-  return `<div onclick="openModal('campaign','${pid}')" style="padding:0 18px 12px;cursor:pointer"><div style="padding:8px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px"><div><div style="font-size:9px;color:var(--dg)">بداية الترويج · ${fmtDate(start)}</div><div style="font-size:12px;font-weight:700;color:var(--g);margin-top:2px">${elapsed}</div></div><div style="text-align:left"><div style="font-size:10px;font-weight:600;color:${statusCol};white-space:nowrap">${statusTxt}</div></div></div></div>`;
-}
+// ── Card ──
+function cardHTML(pid){
+  const p=PROJECTS.find(x=>x.id===pid),d=DATA[pid];
+  if(!d)return'';
+  const soldPct=Math.round(((d.sold+d.booked)/d.units)*100);
+  const remain=d.units-d.sold-d.booked;
+  const cpl=d.leads>0?Math.round(d.spent/d.leads):0;
+  const budgetLeft=d.budget-d.spent;
+  const toolsDone=d.tools.filter(t=>t.d).length;
+  const weeks=weeksElapsed(d.promoStart);
+  const isActive=!d.promoEnd;
+  const sc=saleCol(soldPct);
 
-function clearCampaign(pid){
-  DATA[pid].campaignStart='';DATA[pid].campaignEnd='';
-  db.ref('projects/'+pid+'/campaignStart').set('');db.ref('projects/'+pid+'/campaignEnd').set('');
-  _modal=null;document.getElementById('modalOverlay').style.display='none';render();
-}
+  // Section 0: أرقام البيع
+  const s0=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+    ${[{v:d.leads.toLocaleString(),l:'تسجيل',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
+  </div>
+  <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${Math.round(d.sold/d.units*100)}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${Math.round(d.booked/d.units*100)}%;background:#d4850a;transition:width .5s"></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${Math.round(d.sold/d.units*100)}%</span><span>محجوز ${Math.round(d.booked/d.units*100)}%</span><span style="color:var(--red)">متبقي ${Math.round(remain/d.units*100)}%</span></div>`;
 
-// ── Ring ──
-function ringHTML(pct){
-  const sz=54,st=5.5,r=(sz-st)/2,c=2*Math.PI*r,o=c-(pct/100)*c;
-  const col=pct>=75?'#1b7a4a':pct>=40?'#a88575':'#132556';
-  return `<div style="position:relative;display:flex;align-items:center;justify-content:center;width:${sz}px;height:${sz}px;flex-shrink:0"><svg width="${sz}" height="${sz}" style="transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="#ece8e3" stroke-width="${st}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${st}" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round" style="transition:stroke-dashoffset .7s"/></svg><div style="position:absolute;font-size:12px;font-weight:700;color:#222">${pct}<span style="font-size:7px">%</span></div></div>`;
+  // Section 1: مدة الحملة
+  const s1=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:9px;color:var(--dg)">بداية الترويج · ${fmtDate(d.promoStart)}</div><div style="font-size:12px;font-weight:700;color:var(--g);margin-top:2px">${weeksText(weeks)} من بداية الحملة</div></div>
+    <div style="padding:3px 10px;border-radius:6px;background:${isActive?'#edf7f0':'var(--bl)'};font-size:10px;font-weight:700;color:${isActive?'#1b7a4a':'var(--b)'};white-space:nowrap">${isActive?'لازالت مستمرة':fmtDate(d.promoEnd)}</div>
+  </div>`;
+
+  // Section 2: الميزانية
+  const bPct=Math.round(d.spent/d.budget*100);
+  const s2=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+    <div style="text-align:center;padding:8px 6px;border-radius:8px;background:var(--gl)"><div style="font-size:14px;font-weight:800;color:var(--g)">${d.budget.toLocaleString()}</div><div style="font-size:8px;color:var(--dg);margin-top:2px">الميزانية</div></div>
+    <div style="text-align:center;padding:8px 6px;border-radius:8px;background:var(--bl)"><div style="font-size:14px;font-weight:800;color:var(--b)">${cpl} <span style="font-size:10px;font-weight:600">ريال</span></div><div style="font-size:8px;color:var(--dg);margin-top:2px">تكلفة الليد</div></div>
+    <div style="text-align:center;padding:8px 6px;border-radius:8px;background:${budgetLeft<d.budget*.2?'#fdf0ee':'var(--gl)'}"><div style="font-size:14px;font-weight:800;color:${budgetLeft<d.budget*.2?'var(--red)':'var(--g)'}">${budgetLeft.toLocaleString()}</div><div style="font-size:8px;color:var(--dg);margin-top:2px">المتبقي</div></div>
+  </div>
+  <div style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dg);margin-bottom:2px"><span>الإنفاق</span><span style="font-weight:700;color:var(--b)">${bPct}%</span></div><div style="height:5px;border-radius:3px;background:#ece8e3;overflow:hidden"><div style="height:100%;width:${bPct}%;border-radius:3px;background:var(--b);transition:width .5s"></div></div></div>`;
+
+  // Section 3: المواد الاتصالية
+  const overallPct=Math.round(toolsDone/d.tools.length*100);
+  const s3=`<div style="height:4px;border-radius:2px;background:#ece8e3;overflow:hidden;margin-bottom:10px"><div style="height:100%;width:${overallPct}%;border-radius:2px;background:var(--g);transition:width .5s"></div></div>
+  ${GROUPS.map(gr=>{
+    const done=gr.keys.filter(k=>d.tools[k]?.d).length;
+    return `<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:4px;display:flex;justify-content:space-between"><span>${gr.title}</span><span style="color:var(--dg)">${done}/${gr.keys.length}</span></div><div style="display:flex;flex-wrap:wrap">${gr.keys.map(ki=>{const t=d.tools[ki];if(!t)return'';return`<div class="tool-pill ${t.d?'done':''}" onclick="togTool('${pid}',${ki})" oncontextmenu="event.preventDefault();openModal('toollink','${pid}',${ki})"><div class="tool-chk" style="background:${t.d?'var(--g)':'var(--bd)'}">${t.d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div><span style="font-size:10px;font-weight:600;color:${t.d?'var(--g)':'var(--dg)'};white-space:nowrap">${t.n}</span>${t.d&&t.l?`<a href="${t.l}" target="_blank" onclick="event.stopPropagation()" style="font-size:8px;color:var(--nv);text-decoration:none">↗</a>`:''}</div>`;}).join('')}</div></div>`;
+  }).join('')}`;
+
+  // Section 4: ملاحظات
+  const s4=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);font-size:11px;line-height:1.7;color:var(--dg);cursor:pointer" onclick="openModal('note','${pid}')">${d.note||'اضغط لإضافة ملاحظة...'}</div>`;
+
+  const sumSale=`${d.sold} مباع · ${remain} متبقي`;
+  const sumCamp=`${weeks} أسبوع · ${isActive?'مستمرة':'منتهية'}`;
+  const sumBudget=`${d.spent.toLocaleString()} / ${d.budget.toLocaleString()} · CPL ${cpl} ر.س`;
+  const sumTools=`${toolsDone}/${d.tools.length} جاهز`;
+  const sumNote=d.note?d.note.substring(0,35)+'...':'';
+
+  return `<div id="pcard-${pid}" style="background:var(--w);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1px solid var(--bd)">
+    <div style="padding:16px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+      <a href="${d.url||'#'}" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><div style="font-size:20px;font-weight:800;color:var(--g)">${p.name}</div><div style="font-size:12px;color:var(--b);margin-top:2px">${p.loc}</div></a>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="openModal('edit','${pid}')" style="padding:5px 12px;border-radius:7px;border:1px solid var(--bd);background:var(--w);color:var(--dg);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">تعديل</button>
+        ${ringHTML(soldPct,sc)}
+      </div>
+    </div>
+    ${secHTML(pid,0,'أرقام البيع','#1b7a4a',sumSale,s0)}
+    ${secHTML(pid,1,'مدة الحملة','#132556',sumCamp,s1)}
+    ${secHTML(pid,2,'الميزانية','#a88575',sumBudget,s2)}
+    ${secHTML(pid,3,'المواد الاتصالية','#003f3f',sumTools,s3)}
+    ${secHTML(pid,4,'ملاحظات','#59132e',sumNote,s4)}
+  </div>`;
 }
 
 // ── Render ──
-function render(){
+function renderHeader(){
   const tL=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.leads||0),0);
+  const tS=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.sold||0),0);
   const tB=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.booked||0),0);
-  const tU=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.totalUnits||0),0);
-  const tMD=PROJECTS.reduce((s,p)=>s+MATERIALS.filter(m=>DATA[p.id]?.materials?.[m.key]?.done).length,0);
-  const sP=tU>0?Math.round(tB/tU*100):0;
-  const mP=Math.round(tMD/(PROJECTS.length*MATERIALS.length)*100);
-
+  const tU=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.units||0),0);
+  const tSp=PROJECTS.reduce((s,p)=>s+(DATA[p.id]?.spent||0),0);
+  const sP=tU>0?Math.round((tS+tB)/tU*100):0;
+  const avgCPL=tL>0?Math.round(tSp/tL):0;
   document.getElementById('headerStats').innerHTML=[
     {v:tL.toLocaleString(),l:'تسجيل',c:'#fff'},
-    {v:tB,l:'حجز',c:'#7be0a8'},
+    {v:tS+tB,l:'مباع + محجوز',c:'#7be0a8'},
     {v:sP+'%',l:'نسبة البيع',c:'#a88575'},
-    {v:mP+'%',l:'جاهزية المواد',c:'#b8d8d0'},
+    {v:avgCPL+' ر.س',l:'متوسط CPL',c:'#b8d8d0'},
   ].map(s=>`<div class="dash-stat"><div class="v" style="color:${s.c}">${s.v}</div><div class="l">${s.l}</div></div>`).join('');
-
-  document.getElementById('projectsGrid').innerHTML=PROJECTS.map(p=>{
-    const d=DATA[p.id];if(!d)return'';
-    const sP=d.totalUnits>0?Math.round(d.booked/d.totalUnits*100):0;
-    const rem=d.totalUnits-d.booked;
-    const mDone=MATERIALS.filter(m=>d.materials?.[m.key]?.done).length;
-
-    const pills=MATERIALS.map(m=>{
-      const md=d.materials?.[m.key];
-      const done=md?.done,lnk=md?.link?.trim();
-      return `<div style="display:inline-flex;align-items:center"><span onclick="toggleMaterial('${p.id}','${m.key}')" style="padding:3px 9px;border-radius:${lnk?'5px 0 0 5px':'5px'};font-size:10px;font-weight:600;cursor:pointer;background:${done?'var(--g)':'#f0ece7'};color:${done?'#fff':'#aaa'};border:1px solid ${done?'var(--g)':'#ddd'};transition:all .15s;user-select:none">${m.label}</span>${lnk?`<a href="${lnk}" target="_blank" onclick="event.stopPropagation()" style="padding:3px 5px;border-radius:0 5px 5px 0;font-size:10px;line-height:1.6;background:${done?'#005252':'#e4dfd9'};color:${done?'#7ee8e8':'#888'};border:1px solid ${done?'var(--g)':'#ddd'};border-right:none;text-decoration:none">↗</a>`:''}</div>`;
-    }).join('');
-
-    const linkBtns=MATERIALS.map(m=>`<span onclick="openModal('link','${p.id}','${m.key}')" style="font-size:9px;color:${d.materials?.[m.key]?.link?'var(--nv)':'#ccc'};cursor:pointer;padding:1px 4px" title="رابط ${m.label}">🔗 ${m.label}</span>`).join('');
-
-    const noteStyle=d.notes
-      ?`border-right:3px solid var(--b);border-top:1px solid #ece7e0;border-bottom:1px solid #ece7e0;border-left:1px solid #ece7e0;background:#fdfbf8;color:var(--dg)`
-      :`border:1px dashed var(--bd);background:var(--bg);color:#c4bfb8`;
-
-    return `<div class="pcard">
-      <div style="padding:16px 18px 10px;display:flex;justify-content:space-between;align-items:center">
-        <div><div style="font-size:15px;font-weight:700;color:var(--g)">${p.name}</div><div style="font-size:11px;color:var(--b);margin-top:1px">${p.loc}</div></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button onclick="openModal('edit','${p.id}')" style="background:none;border:1px solid var(--bd);border-radius:6px;padding:3px 9px;font-size:10px;color:var(--dg);cursor:pointer;font-family:inherit">تعديل</button>
-          ${ringHTML(sP)}
-        </div>
-      </div>
-      <div style="padding:0 18px 14px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px">
-        ${[{v:d.leads,l:'تسجيل',c:'var(--nv)'},{v:d.booked,l:'حجز',c:'#1b7a4a'},{v:sP+'%',l:'مباع',c:sP>=70?'#1b7a4a':'var(--b)'},{v:rem,l:'متبقي',c:'var(--mr)'}]
-          .map(m=>`<div style="text-align:center;padding:7px 2px;border-radius:8px;background:var(--bg)"><div style="font-size:14px;font-weight:700;color:${m.c}">${m.v}</div><div style="font-size:8px;color:var(--dg);margin-top:1px">${m.l}</div></div>`).join('')}
-      </div>
-      ${campaignHTML(d,p.id)}
-      <div style="padding:0 18px 12px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:10px;font-weight:600;color:var(--dg)">المواد الاتصالية</span>
-          <span style="font-size:10px;font-weight:700;color:${mDone===6?'#1b7a4a':'var(--b)'}">${mDone}/6</span>
-        </div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">${pills}</div>
-        <div style="display:flex;gap:2px;flex-wrap:wrap">${linkBtns}</div>
-      </div>
-      <div style="padding:0 18px 16px">
-        <div onclick="openModal('note','${p.id}')" style="padding:7px 12px;border-radius:8px;font-size:11px;line-height:1.6;cursor:pointer;${noteStyle}">${d.notes||'ملاحظة...'}</div>
-      </div>
-    </div>`;
-  }).join('');
 }
+
+function render(){
+  renderHeader();
+  document.getElementById('projectsGrid').innerHTML=PROJECTS.map(p=>cardHTML(p.id)).join('');
+}
+
 </script>
 </body>
 </html>
