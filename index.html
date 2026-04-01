@@ -173,17 +173,17 @@ function mkT(done, links){
 }
 
 const DEFAULTS = {
-  sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:60,sold:0,booked:0,leads:0,budget:0,spent:0,promoStart:"2026-01-15",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/63"}),note:"المشروع الرئيسي. أعلى ميزانية ترويجية. كل المواد جاهزة ومفعّلة."},
-  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:80,sold:0,booked:0,leads:0,budget:0,spent:0,promoStart:"2026-03-16",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"بيع على الخارطة. أكبر مشروع حاليًا. التصوير ينتظر اكتمال الواجهات."},
-  m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:48,sold:0,booked:0,leads:0,budget:0,spent:0,promoStart:"2025-11-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/43"}),note:"أداء ممتاز في التسجيلات. التركيز على إغلاق العملاء المترددين في الوحدات المتبقية."},
-  m63:{url:"https://asasmakeen.com/ar/u/pu/3/42",units:36,sold:22,booked:5,leads:49,budget:70000,spent:55000,promoStart:"2025-12-10",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/42"}),note:"أداء جيد. حملة المؤثرين ستضاف قريباً لتسريع بيع الوحدات المتبقية."},
-  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:40,sold:0,booked:0,leads:0,budget:0,spent:0,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"البيع يحتاج دفعة إضافية. حملة المؤثرين قيد التنسيق مع 3 مؤثرين."},
-  m72:{url:"https://asasmakeen.com/ar/u/pu/3/50",units:32,sold:28,booked:2,leads:44,budget:75000,spent:71000,promoStart:"2025-10-15",promoEnd:"2026-04-15",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,1],{5:"https://asasmakeen.com/ar/u/pu/3/50"}),note:"شبه مكتمل! وحدتان متبقيتان فقط. أفضل نسبة تحويل من بين جميع المشاريع."},
-  m85:{url:"https://asasmakeen.com/ar/u/pu/3/60",units:52,sold:8,booked:4,leads:199,budget:110000,spent:28000,promoStart:"2026-03-01",promoEnd:null,tools:mkT([1,0,0,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/60"}),note:"مشروع جديد. الفيديو والتصوير قيد الإنتاج. مرحلة التسخين الأولى."},
-  m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:30,sold:19,booked:3,leads:482,budget:65000,spent:48000,promoStart:"2025-12-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/48"}),note:"أداء جيد ومستقر. الحي مطلوب والتحويلات ممتازة. بحاجة لتكثيف Retargeting."},
-  m80:{url:"https://asasmakeen.com/ar/u/pu/3/52",units:44,sold:15,booked:6,leads:26,budget:95000,spent:52000,promoStart:"2026-01-20",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/52"}),note:"تحسّن ملحوظ بعد تحديث التصاميم. المؤثرين الخطوة القادمة."},
-  m71:{url:"https://asasmakeen.com/ar/u/pu/3/49",units:28,sold:24,booked:1,leads:21,budget:60000,spent:57000,promoStart:"2025-10-01",promoEnd:"2026-04-30",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/49"}),note:"قارب الاكتمال! 3 وحدات متبقية فقط. تركيز على الإغلاق النهائي."},
-  m67:{url:"",units:40,sold:12,booked:8,leads:150,budget:80000,spent:35000,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,1,0,0,0,0]),note:"مشروع مكين 67. الحملة عبر إعلانات ميتا بشكل رئيسي."},
+  sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:60,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-01-15",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/63"}),note:"لا توجد بيانات حملة بعد."},
+  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:80,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-03-16",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"لا توجد بيانات حملة بعد."},
+  m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:48,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2025-11-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/43"}),note:"لا توجد بيانات حملة بعد."},
+  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:40,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"لا توجد بيانات حملة بعد."},
+  m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:30,sold:19,booked:3,leads:482,newL:216,contacted:86,followUp:64,qualified:99,unqualified:11,sources:[{name:"سناب شات",count:477},{name:"إعلانات ميتا",count:2},{name:"الموقع الإلكتروني",count:1},{name:"إدخال يدوي",count:1},{name:"أخرى",count:1}],budget:65000,spent:48000,promoStart:"2025-12-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/48"}),note:"أعلى مشروع من حيث عدد العملاء. سناب شات المصدر الرئيسي (477 عميل)."},
+  m85:{url:"https://asasmakeen.com/ar/u/pu/3/60",units:52,sold:8,booked:4,leads:199,newL:81,contacted:46,followUp:28,qualified:38,unqualified:6,sources:[{name:"سناب شات",count:193},{name:"الموقع الإلكتروني",count:4},{name:"إدخال يدوي",count:1},{name:"أخرى",count:1}],budget:110000,spent:28000,promoStart:"2026-03-01",promoEnd:null,tools:mkT([1,0,0,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/60"}),note:"سناب شات المصدر الرئيسي (193 عميل). حملة Makeen 85 هي الأقوى أداءً."},
+  m67:{url:"",units:40,sold:12,booked:8,leads:150,newL:54,contacted:28,followUp:30,qualified:37,unqualified:1,sources:[{name:"إعلانات ميتا",count:147},{name:"الموقع الإلكتروني",count:2},{name:"إدخال يدوي",count:1}],budget:80000,spent:35000,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,1,0,0,0,0]),note:"إعلانات ميتا المصدر الرئيسي (147 عميل). نسبة المؤهلين جيدة (37 من 150)."},
+  m63:{url:"https://asasmakeen.com/ar/u/pu/3/42",units:36,sold:22,booked:5,leads:49,newL:8,contacted:6,followUp:6,qualified:12,unqualified:1,sources:[{name:"سناب شات",count:47},{name:"الموقع الإلكتروني",count:2}],budget:70000,spent:55000,promoStart:"2025-12-10",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/42"}),note:"سناب شات المصدر الرئيسي. نسبة تأهيل عالية (12 مؤهل من 49)."},
+  m72:{url:"https://asasmakeen.com/ar/u/pu/3/50",units:32,sold:28,booked:2,leads:44,newL:10,contacted:12,followUp:7,qualified:11,unqualified:2,sources:[{name:"سناب شات",count:36},{name:"إدخال يدوي",count:6},{name:"الموقع الإلكتروني",count:1},{name:"بوابة عقارية",count:1}],budget:75000,spent:71000,promoStart:"2025-10-15",promoEnd:"2026-04-15",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,1],{5:"https://asasmakeen.com/ar/u/pu/3/50"}),note:"شبه مكتمل. سناب شات + إدخال يدوي المصادر الرئيسية."},
+  m80:{url:"https://asasmakeen.com/ar/u/pu/3/52",units:44,sold:15,booked:6,leads:26,newL:6,contacted:9,followUp:3,qualified:3,unqualified:0,sources:[{name:"سناب شات",count:20},{name:"إدخال يدوي",count:6}],budget:95000,spent:52000,promoStart:"2026-01-20",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/52"}),note:"عدد عملاء منخفض. سناب شات + إدخال يدوي. بحاجة لتكثيف الحملات."},
+  m71:{url:"https://asasmakeen.com/ar/u/pu/3/49",units:28,sold:24,booked:1,leads:21,newL:5,contacted:3,followUp:3,qualified:4,unqualified:2,sources:[{name:"سناب شات",count:20},{name:"إدخال يدوي",count:1}],budget:60000,spent:57000,promoStart:"2025-10-01",promoEnd:"2026-04-30",tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/49"}),note:"قارب الاكتمال. 3 وحدات متبقية. سناب شات المصدر الرئيسي."},
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -234,7 +234,7 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&Array.isArray(raw.tools)&&raw.tools.length>0&&raw.tools[0].g!==undefined){DATA[p.id]={...raw}}
+      if(raw&&Array.isArray(raw.tools)&&raw.tools.length>0&&raw.tools[0].g!==undefined&&raw.newL!==undefined){DATA[p.id]={...raw}}
       else{DATA[p.id]=JSON.parse(JSON.stringify(DEFAULTS[p.id]));db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
@@ -281,12 +281,20 @@ function openModal(type,pid,extra){
     document.getElementById('modalSub').textContent='تعديل الأرقام ومدة الحملة';
     document.getElementById('modalBody').innerHTML=`
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div><label class="el">التسجيلات</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
+        <div><label class="el">إجمالي العملاء</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
         <div><label class="el">الحجوزات</label><input class="ei" id="e_booked" type="number" value="${d.booked}"></div>
         <div><label class="el">المبيعات</label><input class="ei" id="e_sold" type="number" value="${d.sold}"></div>
         <div><label class="el">الوحدات</label><input class="ei" id="e_units" type="number" value="${d.units}"></div>
         <div><label class="el">الميزانية</label><input class="ei" id="e_budget" type="number" value="${d.budget}"></div>
         <div><label class="el">المصروف</label><input class="ei" id="e_spent" type="number" value="${d.spent}"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">دورة حياة العملاء</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><label class="el">جديد</label><input class="ei" id="e_newL" type="number" value="${d.newL||0}"></div>
+        <div><label class="el">تم التواصل</label><input class="ei" id="e_contacted" type="number" value="${d.contacted||0}"></div>
+        <div><label class="el">متابعة</label><input class="ei" id="e_followUp" type="number" value="${d.followUp||0}"></div>
+        <div><label class="el">مؤهل</label><input class="ei" id="e_qualified" type="number" value="${d.qualified||0}"></div>
+        <div><label class="el">غير مؤهل</label><input class="ei" id="e_unqualified" type="number" value="${d.unqualified||0}"></div>
       </div>
       <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">مدة الحملة</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -316,7 +324,7 @@ function closeModal(){
   const{type,pid,extra}=_modal;
   const d=DATA[pid];
   if(type==='edit'){
-    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,promoStart:document.getElementById('e_ps').value||null,promoEnd:document.getElementById('e_pe').value||null};
+    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,newL:+document.getElementById('e_newL').value||0,contacted:+document.getElementById('e_contacted').value||0,followUp:+document.getElementById('e_followUp').value||0,qualified:+document.getElementById('e_qualified').value||0,unqualified:+document.getElementById('e_unqualified').value||0,promoStart:document.getElementById('e_ps').value||null,promoEnd:document.getElementById('e_pe').value||null};
     Object.assign(d,f);
     Object.entries(f).forEach(([k,v])=>db.ref('projects/'+pid+'/'+k).set(v));
   }else if(type==='note'){
@@ -363,10 +371,17 @@ function cardHTML(pid){
 
   // Section 0: أرقام البيع
   const s0=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-    ${[{v:d.leads.toLocaleString(),l:'تسجيل',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
+    ${[{v:d.leads.toLocaleString(),l:'إجمالي العملاء',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
   </div>
   <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${Math.round(d.sold/d.units*100)}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${Math.round(d.booked/d.units*100)}%;background:#d4850a;transition:width .5s"></div></div>
-  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${Math.round(d.sold/d.units*100)}%</span><span>محجوز ${Math.round(d.booked/d.units*100)}%</span><span style="color:var(--red)">متبقي ${Math.round(remain/d.units*100)}%</span></div>`;
+  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${Math.round(d.sold/d.units*100)}%</span><span>محجوز ${Math.round(d.booked/d.units*100)}%</span><span style="color:var(--red)">متبقي ${Math.round(remain/d.units*100)}%</span></div>
+  ${d.leads>0?`<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd)">
+    <div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:6px">دورة حياة العملاء</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center">
+      ${[{v:d.newL||0,l:'جديد',c:'#3498db'},{v:d.contacted||0,l:'تم التواصل',c:'#9b59b6'},{v:d.followUp||0,l:'متابعة',c:'#e67e22'},{v:d.qualified||0,l:'مؤهل',c:'#1b7a4a'},{v:d.unqualified||0,l:'غير مؤهل',c:'#c0392b'}].map(x=>`<div><div style="font-size:14px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">${x.l}</div></div>`).join('')}
+    </div>
+    <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:6px">${[{v:d.newL||0,c:'#3498db'},{v:d.contacted||0,c:'#9b59b6'},{v:d.followUp||0,c:'#e67e22'},{v:d.qualified||0,c:'#1b7a4a'},{v:d.unqualified||0,c:'#c0392b'}].map(x=>`<div style="width:${d.leads>0?((x.v/d.leads)*100):0}%;background:${x.c}"></div>`).join('')}</div>
+  </div>`:''}`;
 
   // Section 1: مدة الحملة
   const s1=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
@@ -392,13 +407,21 @@ function cardHTML(pid){
     return `<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:4px;display:flex;justify-content:space-between"><span>${gr.title}</span><span style="color:var(--dg)">${done}/${grTools.length}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px">${grTools.map(t=>{return`<div class="tool-pill ${t.d?'done':''}" style="position:relative" onclick="togTool('${pid}',${t._i})" oncontextmenu="event.preventDefault();openModal('toollink','${pid}',${t._i})"><div class="tool-chk" style="background:${t.d?'var(--g)':'var(--bd)'}">${t.d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div><span style="font-size:10px;font-weight:600;color:${t.d?'var(--g)':'var(--dg)'};white-space:nowrap">${t.n}</span>${t.d&&t.l?`<a href="${t.l}" target="_blank" onclick="event.stopPropagation()" style="font-size:8px;color:var(--nv);text-decoration:none">↗</a>`:''}<span onclick="event.stopPropagation();delTool('${pid}',${t._i})" style="font-size:11px;color:#c0392b;cursor:pointer;margin-right:2px;font-weight:700;opacity:.5" title="حذف">×</span></div>`;}).join('')}<div onclick="addTool('${pid}',${gr.id})" style="display:flex;align-items:center;gap:2px;padding:5px 10px;border-radius:8px;border:1.5px dashed var(--bd);cursor:pointer;font-size:10px;font-weight:600;color:var(--dg);white-space:nowrap" title="إضافة عنصر"><span style="font-size:14px;line-height:1">+</span></div></div></div>`;
   }).join('')}`;
 
-  // Section 4: ملاحظات
-  const s4=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);font-size:11px;line-height:1.7;color:var(--dg);cursor:pointer" onclick="openModal('note','${pid}')">${d.note||'اضغط لإضافة ملاحظة...'}</div>`;
+  // Section 4: مصادر العملاء
+  const srcList=d.sources||[];
+  const s4=srcList.length>0?`<div style="display:flex;flex-direction:column;gap:4px">${srcList.map(s=>{
+    const pct=d.leads>0?Math.round(s.count/d.leads*100):0;
+    return`<div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;font-weight:600;color:var(--g);min-width:110px;white-space:nowrap">${s.name}</span><div style="flex:1;height:6px;border-radius:3px;background:#ece8e3;overflow:hidden"><div style="height:100%;width:${pct}%;border-radius:3px;background:var(--b);transition:width .5s"></div></div><span style="font-size:10px;font-weight:700;color:var(--b);min-width:28px;text-align:left">${s.count}</span><span style="font-size:8px;color:var(--dg);min-width:28px">${pct}%</span></div>`;
+  }).join('')}</div>`:`<div style="text-align:center;padding:12px;font-size:11px;color:var(--dg)">لا توجد بيانات مصادر</div>`;
 
-  const sumSale=`${d.sold} مباع · ${remain} متبقي`;
+  // Section 5: ملاحظات
+  const s5=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);font-size:11px;line-height:1.7;color:var(--dg);cursor:pointer" onclick="openModal('note','${pid}')">${d.note||'اضغط لإضافة ملاحظة...'}</div>`;
+
+  const sumSale=`${d.leads} عميل · ${d.sold} مباع · ${remain} متبقي`;
   const sumCamp=`${weeks} أسبوع · ${isActive?'مستمرة':'منتهية'}`;
   const sumBudget=`${d.spent.toLocaleString()} / ${d.budget.toLocaleString()} · CPL ${cpl} ر.س`;
   const sumTools=`${toolsDone}/${d.tools.length} جاهز`;
+  const sumSrc=srcList.length>0?srcList[0].name+' ('+srcList[0].count+')':'لا توجد بيانات';
   const sumNote=d.note?d.note.substring(0,35)+'...':'';
 
   return `<div id="pcard-${pid}" style="background:var(--w);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1px solid var(--bd)">
@@ -413,12 +436,13 @@ function cardHTML(pid){
     ${secHTML(pid,1,'مدة الحملة','#132556',sumCamp,s1)}
     ${secHTML(pid,2,'الميزانية','#a88575',sumBudget,s2)}
     ${secHTML(pid,3,'المواد الاتصالية','#003f3f',sumTools,s3)}
-    ${secHTML(pid,4,'ملاحظات','#59132e',sumNote,s4)}
+    ${secHTML(pid,4,'مصادر العملاء','#3498db',sumSrc,s4)}
+    ${secHTML(pid,5,'ملاحظات','#59132e',sumNote,s5)}
   </div>`;
 }
 
-function expandAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=true});render()}
-function collapseAll(){PROJECTS.forEach(p=>{for(let i=0;i<5;i++)OPEN[p.id+'_'+i]=false});render()}
+function expandAll(){PROJECTS.forEach(p=>{for(let i=0;i<6;i++)OPEN[p.id+'_'+i]=true});render()}
+function collapseAll(){PROJECTS.forEach(p=>{for(let i=0;i<6;i++)OPEN[p.id+'_'+i]=false});render()}
 
 // ── Views ──
 function switchView(v){
