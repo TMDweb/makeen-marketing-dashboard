@@ -360,7 +360,7 @@ function secHTML(pid,si,title,accent,summary,content){
 function cardHTML(pid){
   const p=PROJECTS.find(x=>x.id===pid),d=DATA[pid];
   if(!d)return'';
-  const soldPct=Math.round(((d.sold+d.booked)/d.units)*100);
+  const soldPct=d.units>0?Math.round(((d.sold+d.booked)/d.units)*100):0;
   const remain=d.units-d.sold-d.booked;
   const cpl=d.leads>0?Math.round(d.spent/d.leads):0;
   const budgetLeft=d.budget-d.spent;
@@ -373,8 +373,8 @@ function cardHTML(pid){
   const s0=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
     ${[{v:d.leads.toLocaleString(),l:'إجمالي العملاء',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
   </div>
-  <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${Math.round(d.sold/d.units*100)}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${Math.round(d.booked/d.units*100)}%;background:#d4850a;transition:width .5s"></div></div>
-  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${Math.round(d.sold/d.units*100)}%</span><span>محجوز ${Math.round(d.booked/d.units*100)}%</span><span style="color:var(--red)">متبقي ${Math.round(remain/d.units*100)}%</span></div>
+  <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${d.units>0?Math.round(d.sold/d.units*100):0}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${d.units>0?Math.round(d.booked/d.units*100):0}%;background:#d4850a;transition:width .5s"></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${d.units>0?Math.round(d.sold/d.units*100):0}%</span><span>محجوز ${d.units>0?Math.round(d.booked/d.units*100):0}%</span><span style="color:var(--red)">متبقي ${d.units>0?Math.round(remain/d.units*100):0}%</span></div>
   ${d.leads>0?`<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd)">
     <div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:6px">دورة حياة العملاء</div>
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center">
@@ -390,7 +390,7 @@ function cardHTML(pid){
   </div>`;
 
   // Section 2: الميزانية
-  const bPct=Math.round(d.spent/d.budget*100);
+  const bPct=d.budget>0?Math.round(d.spent/d.budget*100):0;
   const s2=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
     <div style="text-align:center;padding:8px 6px;border-radius:8px;background:var(--gl)"><div style="font-size:14px;font-weight:800;color:var(--g)">${d.budget.toLocaleString()}</div><div style="font-size:8px;color:var(--dg);margin-top:2px">الميزانية</div></div>
     <div style="text-align:center;padding:8px 6px;border-radius:8px;background:var(--bl)"><div style="font-size:14px;font-weight:800;color:var(--b)">${cpl} <span style="font-size:10px;font-weight:600">ريال</span></div><div style="font-size:8px;color:var(--dg);margin-top:2px">تكلفة الليد</div></div>
@@ -459,7 +459,7 @@ function switchView(v){
 function tblRows(){
   return PROJECTS.map(p=>{
     const d=DATA[p.id];if(!d)return null;
-    const soldPct=Math.round(((d.sold+d.booked)/d.units)*100);
+    const soldPct=d.units>0?Math.round(((d.sold+d.booked)/d.units)*100):0;
     const cpl=d.leads>0?Math.round(d.spent/d.leads):0;
     const matPct=Math.round(d.tools.filter(t=>t.d).length/d.tools.length*100);
     return{pid:p.id,name:p.name,loc:p.loc,units:d.units,sold:d.sold,booked:d.booked,remain:d.units-d.sold-d.booked,soldPct,leads:d.leads,cpl,budget:d.budget,spent:d.spent,matPct,weeks:weeksElapsed(d.promoStart)};
