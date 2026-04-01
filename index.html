@@ -297,12 +297,16 @@ function openModal(type,pid,extra){
   document.getElementById('modalTitle').textContent=proj.name;
   if(type==='edit'){
     document.getElementById('modalSub').textContent='تعديل الأرقام ومدة الحملة';
+    const hasStart=!!d.promoStart, hasEnd=!!d.promoEnd;
     document.getElementById('modalBody').innerHTML=`
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div><label class="el">إجمالي العملاء</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
         <div><label class="el">الحجوزات</label><input class="ei" id="e_booked" type="number" value="${d.booked}"></div>
         <div><label class="el">المبيعات</label><input class="ei" id="e_sold" type="number" value="${d.sold}"></div>
         <div><label class="el">الوحدات</label><input class="ei" id="e_units" type="number" value="${d.units}"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">الميزانية</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div><label class="el">الميزانية</label><input class="ei" id="e_budget" type="number" value="${d.budget}"></div>
         <div><label class="el">المصروف</label><input class="ei" id="e_spent" type="number" value="${d.spent}"></div>
       </div>
@@ -316,8 +320,14 @@ function openModal(type,pid,extra){
       </div>
       <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">مدة الحملة</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><label class="el">تاريخ البداية</label><input class="ei" id="e_ps" type="date" value="${d.promoStart||''}"></div>
-        <div><label class="el">تاريخ الانتهاء (فاضي = مستمرة)</label><input class="ei" id="e_pe" type="date" value="${d.promoEnd||''}"></div>
+        <div>
+          <label style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer"><input type="checkbox" id="e_ps_on" ${hasStart?'checked':''} onchange="document.getElementById('e_ps').disabled=!this.checked;if(!this.checked)document.getElementById('e_ps').value=''"><span class="el" style="margin:0">الحملة بدأت</span></label>
+          <input class="ei" id="e_ps" type="date" value="${d.promoStart||''}" ${hasStart?'':'disabled'} style="direction:ltr">
+        </div>
+        <div>
+          <label style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer"><input type="checkbox" id="e_pe_on" ${hasEnd?'checked':''} onchange="document.getElementById('e_pe').disabled=!this.checked;if(!this.checked)document.getElementById('e_pe').value=''"><span class="el" style="margin:0">الحملة انتهت</span></label>
+          <input class="ei" id="e_pe" type="date" value="${d.promoEnd||''}" ${hasEnd?'':'disabled'} style="direction:ltr">
+        </div>
       </div>`;
     setTimeout(()=>document.getElementById('e_leads')?.focus(),50);
   }else if(type==='note'){
@@ -342,7 +352,8 @@ function closeModal(){
   const{type,pid,extra}=_modal;
   const d=DATA[pid];
   if(type==='edit'){
-    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,newL:+document.getElementById('e_newL').value||0,contacted:+document.getElementById('e_contacted').value||0,followUp:+document.getElementById('e_followUp').value||0,qualified:+document.getElementById('e_qualified').value||0,unqualified:+document.getElementById('e_unqualified').value||0,promoStart:document.getElementById('e_ps').value||null,promoEnd:document.getElementById('e_pe').value||null};
+    const psOn=document.getElementById('e_ps_on').checked, peOn=document.getElementById('e_pe_on').checked;
+    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,newL:+document.getElementById('e_newL').value||0,contacted:+document.getElementById('e_contacted').value||0,followUp:+document.getElementById('e_followUp').value||0,qualified:+document.getElementById('e_qualified').value||0,unqualified:+document.getElementById('e_unqualified').value||0,promoStart:psOn?(document.getElementById('e_ps').value||null):null,promoEnd:peOn?(document.getElementById('e_pe').value||null):null};
     Object.assign(d,f);
     Object.entries(f).forEach(([k,v])=>db.ref('projects/'+pid+'/'+k).set(v));
   }else if(type==='note'){
