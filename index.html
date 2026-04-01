@@ -234,8 +234,8 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&Array.isArray(raw.tools)&&raw.tools.length>0&&raw.tools[0].g!==undefined&&raw.newL!==undefined){DATA[p.id]={...raw}}
-      else{DATA[p.id]=JSON.parse(JSON.stringify(DEFAULTS[p.id]));db.ref('projects/'+p.id).set(DATA[p.id])}
+      if(raw&&raw._v===2&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
+      else{DATA[p.id]={_v:2,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
   });
