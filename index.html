@@ -176,7 +176,7 @@ const DEFAULTS = {
   sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:62,sold:0,booked:10,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-01-15",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/63"}),note:"لا توجد بيانات حملة بعد."},
   tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:0,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-03-16",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"لا توجد بيانات حملة بعد."},
   m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:125,sold:0,booked:86,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2025-11-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/43"}),note:"لا توجد بيانات حملة بعد."},
-  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:0,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"لا توجد بيانات حملة بعد."},
+  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:75,sold:0,booked:36,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"لا توجد بيانات حملة بعد."},
   m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:124,sold:0,booked:69,leads:482,newL:210,contacted:91,followUp:65,qualified:99,unqualified:11,sources:[{name:"سناب شات",count:477},{name:"إعلانات ميتا",count:2},{name:"الموقع الإلكتروني",count:1},{name:"إدخال يدوي",count:1},{name:"أخرى",count:1}],budget:65000,spent:48000,promoStart:"2025-12-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/48"}),note:"أعلى مشروع من حيث عدد العملاء. سناب شات المصدر الرئيسي (477 عميل)."},
   m85:{url:"https://asasmakeen.com/ar/u/pu/3/60",units:206,sold:0,booked:9,leads:199,newL:80,contacted:47,followUp:28,qualified:38,unqualified:6,sources:[{name:"سناب شات",count:193},{name:"الموقع الإلكتروني",count:4},{name:"إدخال يدوي",count:1},{name:"أخرى",count:1}],budget:110000,spent:28000,promoStart:"2026-03-01",promoEnd:null,tools:mkT([1,0,0,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/60"}),note:"سناب شات المصدر الرئيسي (193 عميل). حملة Makeen 85 هي الأقوى أداءً."},
   m67:{url:"",units:13,sold:0,booked:9,leads:150,newL:51,contacted:31,followUp:30,qualified:37,unqualified:1,sources:[{name:"إعلانات ميتا",count:147},{name:"الموقع الإلكتروني",count:2},{name:"إدخال يدوي",count:1}],budget:80000,spent:35000,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,1,0,0,0,0]),note:"إعلانات ميتا المصدر الرئيسي (147 عميل). نسبة المؤهلين جيدة (37 من 150)."},
@@ -234,8 +234,8 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&raw._v===3&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
-      else{DATA[p.id]={_v:3,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
+      if(raw&&raw._v===4&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
+      else{DATA[p.id]={_v:4,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
   });
