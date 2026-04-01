@@ -300,7 +300,7 @@ function openModal(type,pid,extra){
     const hasStart=!!d.promoStart, hasEnd=!!d.promoEnd;
     document.getElementById('modalBody').innerHTML=`
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div><label class="el">إجمالي العملاء</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
+        <div><label class="el">تسجيل اهتمام</label><input class="ei" id="e_leads" type="number" value="${d.leads}"></div>
         <div><label class="el">الحجوزات</label><input class="ei" id="e_booked" type="number" value="${d.booked}"></div>
         <div><label class="el">المبيعات</label><input class="ei" id="e_sold" type="number" value="${d.sold}"></div>
         <div><label class="el">الوحدات</label><input class="ei" id="e_units" type="number" value="${d.units}"></div>
@@ -400,7 +400,7 @@ function cardHTML(pid){
 
   // Section 0: أرقام البيع
   const s0=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-    ${[{v:d.leads.toLocaleString(),l:'إجمالي العملاء',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
+    ${[{v:d.leads.toLocaleString(),l:'تسجيل اهتمام',c:'#132556',bg:'#eef1f8'},{v:d.booked,l:'حجز',c:'#d4850a',bg:'#fef7ec'},{v:d.sold,l:'مباع',c:'#1b7a4a',bg:'#edf7f0'},{v:remain,l:'متبقي',c:'#c0392b',bg:'#fdf0ee'}].map(x=>`<div style="text-align:center;padding:9px 4px;border-radius:8px;background:${x.bg}"><div style="font-size:20px;font-weight:800;color:${x.c};line-height:1">${x.v}</div><div style="font-size:9px;color:var(--dg);margin-top:3px">${x.l}</div></div>`).join('')}
   </div>
   <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${d.units>0?Math.round(d.sold/d.units*100):0}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${d.units>0?Math.round(d.booked/d.units*100):0}%;background:#d4850a;transition:width .5s"></div></div>
   <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${d.units>0?Math.round(d.sold/d.units*100):0}%</span><span>محجوز ${d.units>0?Math.round(d.booked/d.units*100):0}%</span><span style="color:var(--red)">متبقي ${d.units>0?Math.round(remain/d.units*100):0}%</span></div>
