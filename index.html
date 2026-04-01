@@ -191,7 +191,7 @@ function mkT(done, links){
 
 const DEFAULTS = {
   sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:62,sold:0,booked:10,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-01-15",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/63"}),note:"لا توجد بيانات حملة بعد."},
-  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:256,sold:0,booked:33,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-03-16",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"لا توجد بيانات حملة بعد."},
+  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:256,sold:0,booked:33,leads:856,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[{name:"إنستقرام",count:606},{name:"سناب شات",count:250}],budget:355000,spent:24929,promoStart:"2026-03-04",promoEnd:null,tools:mkT([1,0,1,1,0,1,1,1,1,1,0,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/51"}),note:"856 ليد. إنستقرام المصدر الرئيسي (606). الميزانية 355 ألف، المصروف 7% فقط."},
   m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:125,sold:0,booked:86,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2025-11-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/43"}),note:"لا توجد بيانات حملة بعد."},
   m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:75,sold:0,booked:36,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:"2026-02-01",promoEnd:null,tools:mkT([1,1,1,1,0,1,1,1,0,1,0,0,0],{5:"https://asasmakeen.com/ar/u/pu/3/45"}),note:"لا توجد بيانات حملة بعد."},
   m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:124,sold:0,booked:69,leads:482,newL:210,contacted:91,followUp:65,qualified:99,unqualified:11,sources:[{name:"سناب شات",count:477},{name:"إعلانات ميتا",count:2},{name:"الموقع الإلكتروني",count:1},{name:"إدخال يدوي",count:1},{name:"أخرى",count:1}],budget:65000,spent:48000,promoStart:"2025-12-01",promoEnd:null,tools:mkT([1,1,1,1,1,1,1,1,1,1,1,1,0],{5:"https://asasmakeen.com/ar/u/pu/3/48"}),note:"أعلى مشروع من حيث عدد العملاء. سناب شات المصدر الرئيسي (477 عميل)."},
@@ -252,8 +252,8 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&raw._v===5&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
-      else{DATA[p.id]={_v:5,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
+      if(raw&&raw._v===6&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
+      else{DATA[p.id]={_v:6,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
   });
