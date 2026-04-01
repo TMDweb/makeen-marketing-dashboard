@@ -688,11 +688,11 @@ function getOrderedProjects(){
 function loadOrder(){
   const user=localStorage.getItem('makeen_user')||sessionStorage.getItem('makeen_user');
   if(!user)return;
-  db.ref('order/'+user).once('value',snap=>{
+  db.ref('order/'+user).on('value',snap=>{
     if(snap.exists()&&Array.isArray(snap.val())){
       _projOrder=snap.val();
-      render();
     }
+    if(Object.keys(DATA).length>0)render();
   });
 }
 
