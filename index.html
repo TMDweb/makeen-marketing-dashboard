@@ -144,9 +144,9 @@ const firebaseConfig = {
 };
 
 const GROUPS = [
-  {title:"المواد الأساسية", keys:[0,1,2,3,4,5]},
-  {title:"الترويج المدفوع", keys:[6,7,8,9,10]},
-  {title:"المؤثرين", keys:[11,12]},
+  {title:"المواد الأساسية", id:0},
+  {title:"الترويج المدفوع", id:1},
+  {title:"المؤثرين", id:2},
 ];
 
 const PROJECTS = [
@@ -164,8 +164,12 @@ const PROJECTS = [
 ];
 
 function mkT(done, links){
-  const names=["الملف التعريفي للمشروع","فيديو تعريفي بالمشروع","تصوير فوتوغرافي","تصميم بدأ البيع","تصاميم داعمة","صفحة الهبوط","سناب شات","إنستقرام + تيكتوك","إكس (X)","قوقل Ads","Retargeting","مؤثر عقاري","مؤثر لايف ستايل"];
-  return names.map((n,i)=>({n,d:!!done[i],l:(links&&links[i])||""}));
+  const items=[
+    {n:"الملف التعريفي للمشروع",g:0},{n:"فيديو تعريفي بالمشروع",g:0},{n:"تصوير فوتوغرافي",g:0},{n:"تصميم بدأ البيع",g:0},{n:"تصاميم داعمة",g:0},{n:"صفحة الهبوط",g:0},
+    {n:"سناب شات",g:1},{n:"إنستقرام + تيكتوك",g:1},{n:"إكس (X)",g:1},{n:"قوقل Ads",g:1},{n:"Retargeting",g:1},
+    {n:"مؤثر عقاري",g:2},{n:"مؤثر لايف ستايل",g:2}
+  ];
+  return items.map((t,i)=>({n:t.n,g:t.g,d:!!done[i],l:(links&&links[i])||""}));
 }
 
 const DEFAULTS = {
@@ -230,7 +234,7 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&Array.isArray(raw.tools)&&raw.tools.length===13){DATA[p.id]={...raw}}
+      if(raw&&Array.isArray(raw.tools)&&raw.tools.length>0&&raw.tools[0].g!==undefined){DATA[p.id]={...raw}}
       else{DATA[p.id]=JSON.parse(JSON.stringify(DEFAULTS[p.id]));db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
@@ -250,6 +254,17 @@ function togTool(pid,i){
   const v=!DATA[pid].tools[i].d;
   DATA[pid].tools[i].d=v;
   db.ref('projects/'+pid+'/tools/'+i+'/d').set(v);
+  const el=document.getElementById('pcard-'+pid);
+  if(el)el.outerHTML=cardHTML(pid);
+  renderHeader();
+}
+function addTool(pid,gid){
+  openModal('addtool',pid,gid);
+}
+function delTool(pid,i){
+  if(!confirm('حذف "'+DATA[pid].tools[i].n+'"؟'))return;
+  DATA[pid].tools.splice(i,1);
+  db.ref('projects/'+pid+'/tools').set(DATA[pid].tools);
   const el=document.getElementById('pcard-'+pid);
   if(el)el.outerHTML=cardHTML(pid);
   renderHeader();
@@ -288,6 +303,11 @@ function openModal(type,pid,extra){
     document.getElementById('modalSub').textContent='رابط: '+t.n;
     document.getElementById('modalBody').innerHTML=`<input id="m_tl" dir="ltr" type="url" value="${t.l||''}" placeholder="https://..." style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:monospace;box-sizing:border-box">${t.l?`<a href="${t.l}" target="_blank" style="display:inline-block;margin-top:8px;font-size:12px;color:var(--nv)">فتح الرابط ↗</a>`:''}`;
     setTimeout(()=>document.getElementById('m_tl')?.focus(),50);
+  }else if(type==='addtool'){
+    const grp=GROUPS.find(g=>g.id===extra);
+    document.getElementById('modalSub').textContent='إضافة إلى: '+grp.title;
+    document.getElementById('modalBody').innerHTML=`<input id="m_tn" type="text" placeholder="اسم العنصر الجديد..." style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);font-size:13px;font-family:inherit;box-sizing:border-box;direction:rtl">`;
+    setTimeout(()=>document.getElementById('m_tn')?.focus(),50);
   }
   document.getElementById('modalOverlay').style.display='flex';
 }
@@ -303,6 +323,9 @@ function closeModal(){
     const v=document.getElementById('m_note')?.value||'';d.note=v;db.ref('projects/'+pid+'/note').set(v);
   }else if(type==='toollink'){
     const v=document.getElementById('m_tl')?.value||'';d.tools[extra].l=v;db.ref('projects/'+pid+'/tools/'+extra+'/l').set(v);
+  }else if(type==='addtool'){
+    const nm=document.getElementById('m_tn')?.value.trim();
+    if(nm){d.tools.push({n:nm,g:extra,d:false,l:""});db.ref('projects/'+pid+'/tools').set(d.tools);}
   }
   _modal=null;document.getElementById('modalOverlay').style.display='none';
   const el=document.getElementById('pcard-'+pid);
@@ -364,8 +387,9 @@ function cardHTML(pid){
   const overallPct=Math.round(toolsDone/d.tools.length*100);
   const s3=`<div style="height:4px;border-radius:2px;background:#ece8e3;overflow:hidden;margin-bottom:10px"><div style="height:100%;width:${overallPct}%;border-radius:2px;background:var(--g);transition:width .5s"></div></div>
   ${GROUPS.map(gr=>{
-    const done=gr.keys.filter(k=>d.tools[k]?.d).length;
-    return `<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:4px;display:flex;justify-content:space-between"><span>${gr.title}</span><span style="color:var(--dg)">${done}/${gr.keys.length}</span></div><div style="display:flex;flex-wrap:wrap">${gr.keys.map(ki=>{const t=d.tools[ki];if(!t)return'';return`<div class="tool-pill ${t.d?'done':''}" onclick="togTool('${pid}',${ki})" oncontextmenu="event.preventDefault();openModal('toollink','${pid}',${ki})"><div class="tool-chk" style="background:${t.d?'var(--g)':'var(--bd)'}">${t.d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div><span style="font-size:10px;font-weight:600;color:${t.d?'var(--g)':'var(--dg)'};white-space:nowrap">${t.n}</span>${t.d&&t.l?`<a href="${t.l}" target="_blank" onclick="event.stopPropagation()" style="font-size:8px;color:var(--nv);text-decoration:none">↗</a>`:''}</div>`;}).join('')}</div></div>`;
+    const grTools=d.tools.map((t,i)=>({...t,_i:i})).filter(t=>t.g===gr.id);
+    const done=grTools.filter(t=>t.d).length;
+    return `<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:4px;display:flex;justify-content:space-between"><span>${gr.title}</span><span style="color:var(--dg)">${done}/${grTools.length}</span></div><div style="display:flex;flex-wrap:wrap;gap:4px">${grTools.map(t=>{return`<div class="tool-pill ${t.d?'done':''}" style="position:relative" onclick="togTool('${pid}',${t._i})" oncontextmenu="event.preventDefault();openModal('toollink','${pid}',${t._i})"><div class="tool-chk" style="background:${t.d?'var(--g)':'var(--bd)'}">${t.d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div><span style="font-size:10px;font-weight:600;color:${t.d?'var(--g)':'var(--dg)'};white-space:nowrap">${t.n}</span>${t.d&&t.l?`<a href="${t.l}" target="_blank" onclick="event.stopPropagation()" style="font-size:8px;color:var(--nv);text-decoration:none">↗</a>`:''}<span onclick="event.stopPropagation();delTool('${pid}',${t._i})" style="font-size:11px;color:#c0392b;cursor:pointer;margin-right:2px;font-weight:700;opacity:.5" title="حذف">×</span></div>`;}).join('')}<div onclick="addTool('${pid}',${gr.id})" style="display:flex;align-items:center;gap:2px;padding:5px 10px;border-radius:8px;border:1.5px dashed var(--bd);cursor:pointer;font-size:10px;font-weight:600;color:var(--dg);white-space:nowrap" title="إضافة عنصر"><span style="font-size:14px;line-height:1">+</span></div></div></div>`;
   }).join('')}`;
 
   // Section 4: ملاحظات
