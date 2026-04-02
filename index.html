@@ -105,7 +105,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
   </div>
 
   <!-- Order Modal -->
-  <div id="orderOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center">
+  <div id="orderOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center">
     <div style="background:var(--w);border-radius:14px;width:90%;max-width:400px;max-height:80vh;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.2)">
       <div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:15px;font-weight:800;color:var(--g)">ترتيب المشاريع</div>
@@ -246,7 +246,7 @@ function loadData(){
     const val=snap.val();DATA={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&raw._v===9&&Array.isArray(raw.tools)&&raw.tools.length>0){DATA[p.id]={...raw}}
+      if(raw&&raw._v===9&&Array.isArray(raw.tools)){DATA[p.id]={...raw}}
       else{DATA[p.id]={_v:9,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
     });
     render();
