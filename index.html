@@ -276,8 +276,7 @@ function startLiveSync(){
 function secOpen(pid,si){const k=pid+'_'+si;return k in OPEN?OPEN[k]:si<4}
 function togSec(pid,si){
   OPEN[pid+'_'+si]=!secOpen(pid,si);
-  const el=document.getElementById('pcard-'+pid);
-  if(el)el.outerHTML=cardHTML(pid);
+  render();
 }
 
 // ── Tools ──
