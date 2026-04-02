@@ -403,13 +403,13 @@ function cardHTML(pid){
   </div>
   <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ece8e3;margin-top:8px"><div style="width:${d.units>0?Math.round(d.sold/d.units*100):0}%;background:#1b7a4a;transition:width .5s"></div><div style="width:${d.units>0?Math.round(d.booked/d.units*100):0}%;background:#d4850a;transition:width .5s"></div></div>
   <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--dg)"><span>مباع ${d.units>0?Math.round(d.sold/d.units*100):0}%</span><span>محجوز ${d.units>0?Math.round(d.booked/d.units*100):0}%</span><span style="color:var(--red)">متبقي ${d.units>0?Math.round(remain/d.units*100):0}%</span></div>
-  ${d.leads>0?`<div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd)">
+  <div style="margin-top:10px;padding:8px 10px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd)">
     <div style="font-size:9px;font-weight:700;color:var(--b);margin-bottom:6px">دورة حياة العملاء</div>
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center">
       ${[{v:d.newL||0,l:'جديد',c:'#3498db'},{v:d.contacted||0,l:'تم التواصل',c:'#9b59b6'},{v:d.followUp||0,l:'متابعة',c:'#e67e22'},{v:d.qualified||0,l:'مؤهل',c:'#1b7a4a'},{v:d.unqualified||0,l:'غير مؤهل',c:'#c0392b'}].map(x=>`<div><div style="font-size:14px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">${x.l}</div></div>`).join('')}
     </div>
     <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:6px">${[{v:d.newL||0,c:'#3498db'},{v:d.contacted||0,c:'#9b59b6'},{v:d.followUp||0,c:'#e67e22'},{v:d.qualified||0,c:'#1b7a4a'},{v:d.unqualified||0,c:'#c0392b'}].map(x=>`<div style="width:${d.leads>0?((x.v/d.leads)*100):0}%;background:${x.c}"></div>`).join('')}</div>
-  </div>`:''}`;
+  </div>`;
 
   // Section 1: مدة الحملة
   const hasPromo=!!d.promoStart;
