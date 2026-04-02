@@ -682,31 +682,39 @@ function render(){
 // ── Project Order ──
 let _projOrder=null;
 function getOrderedProjects(){
-  if(!_projOrder)return PROJECTS;
-  return _projOrder.map(id=>PROJECTS.find(p=>p.id===id)).filter(Boolean);
+  const list=_projOrder?_projOrder.map(id=>PROJECTS.find(p=>p.id===id)).filter(Boolean):PROJECTS;
+  return list.filter(p=>!_hiddenProjects.includes(p.id));
 }
 function loadOrder(){
   const user=localStorage.getItem('makeen_user')||sessionStorage.getItem('makeen_user');
   if(!user)return;
   db.ref('order/'+user).on('value',snap=>{
-    if(snap.exists()&&Array.isArray(snap.val())){
-      _projOrder=snap.val();
-    }
+    if(snap.exists()&&Array.isArray(snap.val()))_projOrder=snap.val();
+    if(Object.keys(DATA).length>0)render();
+  });
+  db.ref('hidden/'+user).on('value',snap=>{
+    _hiddenProjects=snap.exists()&&Array.isArray(snap.val())?snap.val():[];
     if(Object.keys(DATA).length>0)render();
   });
 }
 
-let _dragIdx=null;
+let _dragIdx=null,_hiddenProjects=[];
 function openOrderModal(){
   const list=document.getElementById('orderList');
-  const ordered=getOrderedProjects();
-  list.innerHTML=ordered.map((p,i)=>`<div class="order-item" draggable="true" data-idx="${i}" style="padding:10px 14px;margin-bottom:6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--w);cursor:grab;display:flex;align-items:center;gap:10px;font-family:inherit;user-select:none" ondragstart="_dragIdx=${i};this.style.opacity='.5'" ondragend="this.style.opacity='1'" ondragover="event.preventDefault()" ondrop="reorderDrop(${i})"><span style="font-size:14px;color:var(--dg)">☰</span><span style="font-size:13px;font-weight:700;color:var(--g);flex:1">${p.name}</span><span style="font-size:10px;color:var(--dg)">${p.loc}</span></div>`).join('');
+  const ordered=_projOrder?_projOrder.map(id=>PROJECTS.find(p=>p.id===id)).filter(Boolean):PROJECTS;
+  list.innerHTML=ordered.map((p,i)=>{
+    const hidden=_hiddenProjects.includes(p.id);
+    return`<div class="order-item" draggable="true" data-idx="${i}" style="padding:10px 14px;margin-bottom:6px;border-radius:8px;border:1.5px solid ${hidden?'#e0dbd5':'var(--bd)'};background:${hidden?'#f5f3f0':'var(--w)'};cursor:grab;display:flex;align-items:center;gap:10px;font-family:inherit;user-select:none;opacity:${hidden?'.5':'1'}" ondragstart="_dragIdx=${i};this.style.opacity='.3'" ondragend="this.style.opacity='${hidden?'.5':'1'}'" ondragover="event.preventDefault()" ondrop="reorderDrop(${i})"><span style="font-size:14px;color:var(--dg)">☰</span><span style="font-size:13px;font-weight:700;color:var(--g);flex:1">${p.name}</span><span style="font-size:10px;color:var(--dg)">${p.loc}</span><span onclick="event.stopPropagation();togHideProject('${p.id}')" style="cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px" title="${hidden?'إظهار':'إخفاء'}">${hidden?'👁‍🗨':'👁'}</span></div>`;
+  }).join('');
   document.getElementById('orderOverlay').style.display='flex';
 }
+function togHideProject(pid){
+  const idx=_hiddenProjects.indexOf(pid);
+  if(idx>=0)_hiddenProjects.splice(idx,1);else _hiddenProjects.push(pid);
+  openOrderModal();
+}
 function reorderDrop(toIdx){
-  const list=document.getElementById('orderList');
-  const items=[...list.children];
-  const ordered=getOrderedProjects();
+  const ordered=_projOrder?_projOrder.map(id=>PROJECTS.find(p=>p.id===id)).filter(Boolean):PROJECTS;
   const ids=ordered.map(p=>p.id);
   const [moved]=ids.splice(_dragIdx,1);
   ids.splice(toIdx,0,moved);
@@ -716,7 +724,10 @@ function reorderDrop(toIdx){
 function closeOrderModal(){document.getElementById('orderOverlay').style.display='none';}
 function saveOrder(){
   const user=localStorage.getItem('makeen_user')||sessionStorage.getItem('makeen_user');
-  if(user&&_projOrder){db.ref('order/'+user).set(_projOrder);}
+  if(user){
+    if(_projOrder)db.ref('order/'+user).set(_projOrder);
+    db.ref('hidden/'+user).set(_hiddenProjects);
+  }
   closeOrderModal();
   render();
 }
