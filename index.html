@@ -412,10 +412,11 @@ function cardHTML(pid){
   </div>`:''}`;
 
   // Section 1: مدة الحملة
-  const s1=`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+  const hasPromo=!!d.promoStart;
+  const s1=hasPromo?`<div style="padding:8px 12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
     <div><div style="font-size:9px;color:var(--dg)">بداية الترويج · ${fmtDate(d.promoStart)}</div><div style="font-size:12px;font-weight:700;color:var(--g);margin-top:2px">${weeksText(weeks)} من بداية الحملة</div></div>
     <div style="padding:3px 10px;border-radius:6px;background:${isActive?'#edf7f0':'var(--bl)'};font-size:10px;font-weight:700;color:${isActive?'#1b7a4a':'var(--b)'};white-space:nowrap">${isActive?'لازالت مستمرة':fmtDate(d.promoEnd)}</div>
-  </div>`;
+  </div>`:`<div style="padding:12px;border-radius:8px;background:#faf9f7;border:1px solid var(--bd);text-align:center;font-size:12px;font-weight:600;color:var(--dg)">لم يبدأ الترويج</div>`;
 
   // Section 2: الميزانية
   const bPct=d.budget>0?Math.round(d.spent/d.budget*100):0;
