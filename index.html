@@ -328,6 +328,10 @@ function openModal(type,pid,extra){
           <label style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer"><input type="checkbox" id="e_pe_on" ${hasEnd?'checked':''} onchange="document.getElementById('e_pe').disabled=!this.checked;if(!this.checked)document.getElementById('e_pe').value=''"><span class="el" style="margin:0">الحملة انتهت</span></label>
           <input class="ei" id="e_pe" type="date" value="${d.promoEnd||''}" ${hasEnd?'':'disabled'} style="direction:ltr">
         </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g);margin-top:12px;margin-bottom:8px">إظهار / إخفاء الأقسام</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        ${[{i:0,n:'أرقام البيع'},{i:1,n:'مدة الحملة'},{i:2,n:'الميزانية'},{i:3,n:'المواد الاتصالية'},{i:4,n:'مصادر العملاء'},{i:5,n:'ملاحظات'}].map(s=>`<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;border:1px solid var(--bd);cursor:pointer;font-size:10px;font-weight:600;color:var(--dg)"><input type="checkbox" id="e_sec${s.i}" ${!(d.hideSec||[])[s.i]?'checked':''}><span>${s.n}</span></label>`).join('')}
       </div>`;
     setTimeout(()=>document.getElementById('e_leads')?.focus(),50);
   }else if(type==='note'){
@@ -353,7 +357,8 @@ function closeModal(){
   const d=DATA[pid];
   if(type==='edit'){
     const psOn=document.getElementById('e_ps_on').checked, peOn=document.getElementById('e_pe_on').checked;
-    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,newL:+document.getElementById('e_newL').value||0,contacted:+document.getElementById('e_contacted').value||0,followUp:+document.getElementById('e_followUp').value||0,qualified:+document.getElementById('e_qualified').value||0,unqualified:+document.getElementById('e_unqualified').value||0,promoStart:psOn?(document.getElementById('e_ps').value||null):null,promoEnd:peOn?(document.getElementById('e_pe').value||null):null};
+    const hideSec=[0,1,2,3,4,5].map(i=>!document.getElementById('e_sec'+i).checked);
+    const f={leads:+document.getElementById('e_leads').value||0,booked:+document.getElementById('e_booked').value||0,sold:+document.getElementById('e_sold').value||0,units:+document.getElementById('e_units').value||0,budget:+document.getElementById('e_budget').value||0,spent:+document.getElementById('e_spent').value||0,newL:+document.getElementById('e_newL').value||0,contacted:+document.getElementById('e_contacted').value||0,followUp:+document.getElementById('e_followUp').value||0,qualified:+document.getElementById('e_qualified').value||0,unqualified:+document.getElementById('e_unqualified').value||0,promoStart:psOn?(document.getElementById('e_ps').value||null):null,promoEnd:peOn?(document.getElementById('e_pe').value||null):null,hideSec};
     Object.assign(d,f);
     Object.entries(f).forEach(([k,v])=>db.ref('projects/'+pid+'/'+k).set(v));
   }else if(type==='note'){
@@ -461,12 +466,12 @@ function cardHTML(pid){
         ${ringHTML(soldPct,sc)}
       </div>
     </div>
-    ${secHTML(pid,0,'أرقام البيع','#1b7a4a',sumSale,s0)}
-    ${secHTML(pid,1,'مدة الحملة','#132556',sumCamp,s1)}
-    ${secHTML(pid,2,'الميزانية','#a88575',sumBudget,s2)}
-    ${secHTML(pid,3,'المواد الاتصالية','#003f3f',sumTools,s3)}
-    ${secHTML(pid,4,'مصادر العملاء','#3498db',sumSrc,s4)}
-    ${secHTML(pid,5,'ملاحظات','#59132e',sumNote,s5)}
+    ${!(d.hideSec||[])[0]?secHTML(pid,0,'أرقام البيع','#1b7a4a',sumSale,s0):''}
+    ${!(d.hideSec||[])[1]?secHTML(pid,1,'مدة الحملة','#132556',sumCamp,s1):''}
+    ${!(d.hideSec||[])[2]?secHTML(pid,2,'الميزانية','#a88575',sumBudget,s2):''}
+    ${!(d.hideSec||[])[3]?secHTML(pid,3,'المواد الاتصالية','#003f3f',sumTools,s3):''}
+    ${!(d.hideSec||[])[4]?secHTML(pid,4,'مصادر العملاء','#3498db',sumSrc,s4):''}
+    ${!(d.hideSec||[])[5]?secHTML(pid,5,'ملاحظات','#59132e',sumNote,s5):''}
   </div>`;
 }
 
