@@ -241,13 +241,32 @@ window.onload=function(){
 };
 
 // ── Data ──
+let _migrating=false;
 function loadData(){
-  db.ref('projects').on('value',snap=>{
+  db.ref('projects').once('value',snap=>{
     const val=snap.val();DATA={};
+    let needsMigration=false;
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
       if(raw&&raw._v===9&&Array.isArray(raw.tools)){DATA[p.id]={...raw}}
-      else{DATA[p.id]={_v:9,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};db.ref('projects/'+p.id).set(DATA[p.id])}
+      else{DATA[p.id]={_v:9,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};needsMigration=true;}
+    });
+    if(needsMigration){
+      _migrating=true;
+      const updates={};
+      PROJECTS.forEach(p=>{updates[p.id]=DATA[p.id]});
+      db.ref('projects').update(updates).then(()=>{_migrating=false;startLiveSync()});
+    }else{startLiveSync()}
+    render();
+  });
+}
+function startLiveSync(){
+  db.ref('projects').on('value',snap=>{
+    if(_migrating)return;
+    const val=snap.val();
+    PROJECTS.forEach(p=>{
+      const raw=val&&val[p.id];
+      if(raw)DATA[p.id]={...raw};
     });
     render();
   });
