@@ -265,7 +265,7 @@ function togSec(pid,si){
 function togTool(pid,i){
   const v=!DATA[pid].tools[i].d;
   DATA[pid].tools[i].d=v;
-  db.ref('projects/'+pid+'/tools/'+i+'/d').set(v);
+  db.ref('projects/'+pid).update({tools:DATA[pid].tools});
   const el=document.getElementById('pcard-'+pid);
   if(el)el.outerHTML=cardHTML(pid);
   renderHeader();
@@ -276,7 +276,7 @@ function addTool(pid,gid){
 function delTool(pid,i){
   if(!confirm('حذف "'+DATA[pid].tools[i].n+'"؟'))return;
   DATA[pid].tools.splice(i,1);
-  db.ref('projects/'+pid+'/tools').set(DATA[pid].tools);
+  db.ref('projects/'+pid).update({tools:DATA[pid].tools});
   const el=document.getElementById('pcard-'+pid);
   if(el)el.outerHTML=cardHTML(pid);
   renderHeader();
@@ -356,12 +356,12 @@ function closeModal(){
     Object.assign(d,f);
     db.ref('projects/'+pid).update(f);
   }else if(type==='note'){
-    const v=document.getElementById('m_note')?.value||'';d.note=v;db.ref('projects/'+pid+'/note').set(v);
+    const v=document.getElementById('m_note')?.value||'';d.note=v;db.ref('projects/'+pid).update({note:v});
   }else if(type==='toollink'){
-    const v=document.getElementById('m_tl')?.value||'';d.tools[extra].l=v;db.ref('projects/'+pid+'/tools/'+extra+'/l').set(v);
+    const v=document.getElementById('m_tl')?.value||'';d.tools[extra].l=v;db.ref('projects/'+pid).update({tools:d.tools});
   }else if(type==='addtool'){
     const nm=document.getElementById('m_tn')?.value.trim();
-    if(nm){d.tools.push({n:nm,g:extra,d:false,l:""});db.ref('projects/'+pid+'/tools').set(d.tools);}
+    if(nm){d.tools.push({n:nm,g:extra,d:false,l:""});db.ref('projects/'+pid).update({tools:d.tools});}
   }
   _modal=null;document.getElementById('modalOverlay').style.display='none';
   const el=document.getElementById('pcard-'+pid);
