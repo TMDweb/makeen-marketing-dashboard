@@ -179,22 +179,20 @@ const PROJECTS = [
   {id:"m67",name:"مكين 67",loc:"حي الرمال"},
 ];
 
-function mkT(){
-  return [];
-}
 
+function emptyProject(url){return{url:url||"",units:0,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:[],note:""};}
 const DEFAULTS = {
-  sana:{url:"https://asasmakeen.com/ar/u/pu/3/63",units:62,sold:0,booked:10,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  tali:{url:"https://asasmakeen.com/ar/u/pu/3/51",units:256,sold:0,booked:33,leads:856,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:355000,spent:24929,promoStart:"2026-03-04",promoEnd:null,tools:mkT(),note:""},
-  m64:{url:"https://asasmakeen.com/ar/u/pu/3/43",units:125,sold:0,booked:86,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m66:{url:"https://asasmakeen.com/ar/u/pu/3/45",units:75,sold:0,booked:36,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m68:{url:"https://asasmakeen.com/ar/u/pu/3/48",units:124,sold:0,booked:69,leads:482,newL:210,contacted:91,followUp:65,qualified:99,unqualified:11,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m85:{url:"https://asasmakeen.com/ar/u/pu/3/60",units:206,sold:0,booked:9,leads:199,newL:80,contacted:47,followUp:28,qualified:38,unqualified:6,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m67:{url:"",units:13,sold:0,booked:9,leads:150,newL:51,contacted:31,followUp:30,qualified:37,unqualified:1,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m63:{url:"https://asasmakeen.com/ar/u/pu/3/42",units:139,sold:0,booked:127,leads:49,newL:8,contacted:6,followUp:6,qualified:12,unqualified:1,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m72:{url:"https://asasmakeen.com/ar/u/pu/3/50",units:74,sold:0,booked:30,leads:44,newL:10,contacted:12,followUp:7,qualified:11,unqualified:2,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m80:{url:"https://asasmakeen.com/ar/u/pu/3/52",units:92,sold:0,booked:43,leads:26,newL:6,contacted:9,followUp:3,qualified:3,unqualified:0,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
-  m71:{url:"https://asasmakeen.com/ar/u/pu/3/49",units:41,sold:0,booked:8,leads:21,newL:5,contacted:3,followUp:3,qualified:4,unqualified:2,sources:[],budget:0,spent:0,promoStart:null,promoEnd:null,tools:mkT(),note:""},
+  sana:emptyProject("https://asasmakeen.com/ar/u/pu/3/63"),
+  tali:emptyProject("https://asasmakeen.com/ar/u/pu/3/51"),
+  m64:emptyProject("https://asasmakeen.com/ar/u/pu/3/43"),
+  m66:emptyProject("https://asasmakeen.com/ar/u/pu/3/45"),
+  m68:emptyProject("https://asasmakeen.com/ar/u/pu/3/48"),
+  m85:emptyProject("https://asasmakeen.com/ar/u/pu/3/60"),
+  m67:emptyProject(""),
+  m63:emptyProject("https://asasmakeen.com/ar/u/pu/3/42"),
+  m72:emptyProject("https://asasmakeen.com/ar/u/pu/3/50"),
+  m80:emptyProject("https://asasmakeen.com/ar/u/pu/3/52"),
+  m71:emptyProject("https://asasmakeen.com/ar/u/pu/3/49"),
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -245,25 +243,21 @@ let _migrating=false;
 function loadData(){
   db.ref('projects').once('value',snap=>{
     const val=snap.val();DATA={};
-    let needsMigration=false;
+    const updates={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw&&raw._v===9&&Array.isArray(raw.tools)){DATA[p.id]={...raw}}
-      else{DATA[p.id]={_v:9,...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};needsMigration=true;}
+      if(raw){DATA[p.id]={...raw}}
+      else{DATA[p.id]={...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};updates[p.id]=DATA[p.id];}
     });
-    if(needsMigration){
-      _migrating=true;
-      const updates={};
-      PROJECTS.forEach(p=>{updates[p.id]=DATA[p.id]});
-      db.ref('projects').update(updates).then(()=>{_migrating=false;startLiveSync()});
+    if(Object.keys(updates).length>0){
+      db.ref('projects').update(updates).then(()=>startLiveSync());
     }else{startLiveSync()}
     render();
   });
 }
 function startLiveSync(){
   db.ref('projects').on('value',snap=>{
-    if(_migrating)return;
-    const val=snap.val();
+    const val=snap.val();if(!val)return;
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
       if(raw)DATA[p.id]={...raw};
