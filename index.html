@@ -240,13 +240,16 @@ window.onload=function(){
 
 // ── Data ──
 let _migrating=false;
+function fillDefaults(raw){
+  return{tools:[],sources:[],promoStart:null,promoEnd:null,note:'',hideSec:[false,false,false,false,false,false],units:0,sold:0,booked:0,leads:0,newL:0,contacted:0,followUp:0,qualified:0,unqualified:0,budget:0,spent:0,url:'',...raw};
+}
 function loadData(){
   db.ref('projects').once('value',snap=>{
     const val=snap.val();DATA={};
     const updates={};
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw){DATA[p.id]={...raw}}
+      if(raw){DATA[p.id]=fillDefaults(raw)}
       else{DATA[p.id]={...JSON.parse(JSON.stringify(DEFAULTS[p.id]))};updates[p.id]=DATA[p.id];}
     });
     if(Object.keys(updates).length>0){
@@ -260,7 +263,7 @@ function startLiveSync(){
     const val=snap.val();if(!val)return;
     PROJECTS.forEach(p=>{
       const raw=val&&val[p.id];
-      if(raw)DATA[p.id]={...raw};
+      if(raw)DATA[p.id]=fillDefaults(raw);
     });
     render();
   });
