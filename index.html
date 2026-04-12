@@ -326,9 +326,9 @@ function openModal(type,pid,extra){
       </div>
       <div style="font-size:9px;font-weight:600;color:var(--dg);margin-bottom:4px">من تم التواصل معهم</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-        <div><label class="el">متابعة</label><input class="ei" id="e_followUp" type="number" value="${d.followUp||0}"></div>
         <div><label class="el">مؤهلين</label><input class="ei" id="e_qualified" type="number" value="${d.qualified||0}"></div>
         <div><label class="el">غير مؤهلين</label><input class="ei" id="e_unqualified" type="number" value="${d.unqualified||0}"></div>
+        <div><label class="el">متابعة</label><input class="ei" id="e_followUp" type="number" value="${d.followUp||0}"></div>
       </div>
       <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:8px">مدة الحملة</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -430,9 +430,9 @@ function cardHTML(pid){
     </div>
     <div style="font-size:8px;font-weight:600;color:var(--dg);margin-bottom:4px;text-align:center">من تم التواصل معهم</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
-      <div style="text-align:center;padding:5px;border-radius:6px;background:#fef7ec"><div style="font-size:13px;font-weight:800;color:#e67e22">${d.followUp||0}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">متابعة</div></div>
       <div style="text-align:center;padding:5px;border-radius:6px;background:#edf7f0"><div style="font-size:13px;font-weight:800;color:#1b7a4a">${d.qualified||0}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">مؤهلين</div></div>
       <div style="text-align:center;padding:5px;border-radius:6px;background:#fdf0ee"><div style="font-size:13px;font-weight:800;color:#c0392b">${d.unqualified||0}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">غير مؤهلين</div></div>
+      <div style="text-align:center;padding:5px;border-radius:6px;background:#fef7ec"><div style="font-size:13px;font-weight:800;color:#e67e22">${d.followUp||0}</div><div style="font-size:7px;color:var(--dg);margin-top:1px">متابعة</div></div>
     </div>
     <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin-top:6px"><div style="width:${d.leads>0?((d.newL||0)/d.leads*100):0}%;background:#c0392b"></div><div style="width:${d.leads>0?((d.followUp||0)/d.leads*100):0}%;background:#e67e22"></div><div style="width:${d.leads>0?((d.qualified||0)/d.leads*100):0}%;background:#1b7a4a"></div><div style="width:${d.leads>0?((d.unqualified||0)/d.leads*100):0}%;background:#95a5a6"></div><div style="width:${d.leads>0?((d.contacted||0)/d.leads*100):0}%;background:#3498db"></div></div>
   </div>`;
